@@ -52,6 +52,12 @@ header .note{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-tr
 /* сцена A: канвас с линейной моделью, фон листа */
 #stA{background:var(--bg)}
 #aCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* план сверху: размерные цепочки и площади поверх линий модели; место и размер ставит модуль по камере (placeDims) */
+#dims{position:absolute;left:0;top:0;width:0;height:0;overflow:visible;pointer-events:none;visibility:hidden;z-index:1}
+#dims .dl{fill:none;stroke:var(--fg);stroke-width:var(--sw,1.7px);stroke-linecap:square;stroke-dasharray:1;stroke-dashoffset:0.25;opacity:0}
+#dims text{font-family:var(--display);font-size:var(--fs,22px);letter-spacing:.02em;fill:var(--fg);text-anchor:middle}
+#dims .dn text,#dims .da text{opacity:0} #dims .da text{font-size:var(--fsa,20px);fill:var(--muted)}
+#s3 .r{visibility:hidden}   /* Максим 27.10: на плане справа никаких надписей */
 #aFallback img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #stA .src{z-index:3}
 .txt{position:absolute;left:max(16px,calc(64px + env(safe-area-inset-left,0px)));right:max(16px,calc(64px + env(safe-area-inset-right,0px)));bottom:max(72px,calc(72px + env(safe-area-inset-bottom,0px)));display:grid;grid-template-columns:7fr 1fr 4fr;gap:24px;align-items:end;color:#fff;opacity:0;will-change:opacity,transform}
@@ -101,6 +107,21 @@ section.grey{background:#ECE9E3}
 .ph img{width:100%;height:100%;object-fit:cover}
 .ph .cap{position:absolute;left:12px;top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.35);padding:5px 7px}
 .ph.h520{height:520px}.ph.h300{height:300px}.ph.h360{height:360px}
+/* фото автора идёт с нами слева (Максим 30.10): .rd — место портрета, липнет (ScrollTrigger pin) с главы 03 до конца 08;
+   .ride — главы справа от него (--ride-l — левый край текста автора).
+   Дима 02.11, кадры photo в Фигме: один блок, кадры внутри него в одной ячейке сетки, без absolute; первый сверху, затемнение и подпись по макету */
+.ph.rd,.rd .rd-i{display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr)}
+.ph.rd{width:round(100%,1px);z-index:30;isolation:isolate;margin-left:calc(-1 * max(16px, calc(64px + env(safe-area-inset-left,0px))))}   /* Максим 30.10: к левому краю окна */
+.rd .rd-i,.rd .rd-i>*{grid-area:1/1}
+.rd .rd-i{overflow:hidden;background:#000}
+.rd .rd-g{align-self:end;height:33%;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.55))}
+.rd .rd-t{align-self:end;justify-self:start;margin:0 0 14px 16px;white-space:nowrap;color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.rd .cap{position:static;align-self:start;justify-self:start;margin:12px}
+section.flat.ride .wrap{max-width:none;padding-left:var(--ride-l,50vw)}
+.ride .row{grid-template-columns:1fr}.ride .row>*{grid-column:1/-1}
+.scene.ride .stage{margin-left:calc(var(--ride-l,50vw) - 24px)}
+.ride-a .cards{margin-left:calc((100% - 264px) / 2 + 144px)}
+.ride-a .wrap{margin-left:0}   /* Максим 30.10: фото у левого края окна и на широком экране */
 h2.t{font-size:clamp(30px,3.1vw,44px);line-height:1.1}
 .link{display:inline-block;margin-top:22px;font-weight:500;border-bottom:1px solid var(--fg);padding-bottom:3px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:64px}
@@ -200,6 +221,26 @@ footer p{margin:0 0 6px}
 <section class="scene" id="sceneA" style="height:700vh" data-scene="Сцена A, одна 3D-модель, одна камера">
   <div class="stage" id="stA">
     <canvas id="aCanvas"></canvas>
+    <!-- План сверху (A4): размеры с чертежа клиента и площади комнат поверх линий модели. Координаты — пиксели img/a4-plan.png
+         (стены модели лежат на его стенах); на экран кладёт модуль по камере. Справа 9 000 — по стенам чертежа, на нём не подписано -->
+    <svg id="dims" viewBox="0 0 1819 1287" aria-hidden="true">
+      <g class="dl-g">
+        <path class="dl" pathLength="1" d="M249 83H1097M249 195V70M773 195V70M1097 454V70M241 91L257 75M765 91L781 75M1089 91L1105 75"/>
+        <path class="dl" pathLength="1" d="M160 203V1069M241 203H147M241 1069H147M152 211L168 195M152 1077L168 1061"/>
+        <path class="dl" pathLength="1" d="M249 1165H1097M249 1077V1178M636 1077V1178M1097 989V1178M241 1173L257 1157M628 1173L644 1157M1089 1173L1105 1157"/>
+        <path class="dl" pathLength="1" d="M1187 462V981M1105 462H1200M1105 981H1200M1179 470L1195 454M1179 989L1195 973"/>
+      </g>
+      <g class="dn">
+        <text x="511" y="70">9 080</text><text x="935" y="70">5 600</text>
+        <text x="442" y="1152">6 680</text><text x="866" y="1152">8 000</text>
+        <text transform="translate(146 636) rotate(-90)">14 980</text><text transform="translate(1173 721) rotate(-90)">9 000</text>
+      </g>
+      <g class="da">
+        <text x="420" y="410">25,1 м²</text><text x="680" y="418">11,0 м²</text><text x="420" y="612">15,8 м²</text><text x="703" y="600">6,7 м²</text>
+        <text x="705" y="712">3,2 м²</text><text x="420" y="812">15,8 м²</text><text transform="translate(580 790) rotate(-90)">11,3 м²</text><text x="712" y="855">8,3 м²</text>
+        <text x="935" y="930">44,4 м²</text><text x="548" y="1000">6,9 м²</text><text x="355" y="990">7,6 м²</text>
+      </g>
+    </svg>
     <div class="layer" id="aFallback" hidden></div>
     <div class="src" id="srcA1" style="opacity:1">Кадр A1 по модели Алексино, Higgsfield, линии совпадают с кадром</div>
     <div class="src" id="srcA2">Кадр A2 по модели Алексино, Higgsfield, линии совпадают с кадром. Тот же кадр с наездом</div>
@@ -232,14 +273,14 @@ footer p{margin:0 0 6px}
       <div><h2>У дома есть автор.</h2><p class="md">Проект ведёт архитектор: рисует дом под вашу семью и участок, сам отвечает на вопросы до ключей. Стоимость проекта засчитывается в стоимость дома.</p></div><div></div><div></div>
     </div>
     <div class="tr" id="tr1"><b>Переход A1 → A2</b>На сайте: камера едет по линиям от общего плана к фасаду.<i>Здесь: та же точка камеры с наездом (зум), кадр один, поэтому линии совпадают.</i></div>
-    <div class="tr" id="tr2"><b>Переход A2 → A3</b>На сайте так же: камера идёт сквозь угловое окно внутрь по линиям той же модели, в гостиной из линий проявляется бетон, потом отделка, по глубине кадра, окно последним.<i>В аниматике линии настоящие, оба кадра гостиной настоящие, с камеры M.</i></div>
-    <div class="tr" id="tr3"><b>Переход A3 → A4</b>На сайте так же: кадр растворяется в линии, камера поднимается строго вверх, кровля уходит, стены модели ложатся на стены чертежа, поверх проявляется лист плана.<i>В аниматике линии настоящие, чертёж клиента.</i></div>
+    <div class="tr" id="tr2"><b>Переход A2 → A3</b>На сайте так же: камера идёт сквозь угловое окно внутрь по линиям той же модели, в гостиной из линий проявляется бетон, потом отделка и мебель, по глубине кадра, окно последним.<i>В аниматике линии настоящие, кадры гостиной настоящие, с камеры M.</i></div>
+    <div class="tr" id="tr3"><b>Переход A3 → A4</b>На сайте так же: кадр растворяется в линии, камера поднимается строго вверх, кровля уходит, дом остаётся в линиях, по краям прорисовываются размеры, в комнатах площади.<i>В аниматике линии настоящие, размеры и площади с чертежа клиента.</i></div>
     <div class="stamp" id="stamp"><span>Дом</span><span>Алексино, Истра</span><span>Площадь</span><span>156 м²</span><span>Потолок</span><span>3,4 м</span><span>Архитектор</span><span>Максим Липатников</span></div>
   </div>
 </section>
 
 <!-- СЦЕНА B: автор, цена, срок. Светлые экраны -->
-<section class="flat" data-chap="03 У дома есть автор" data-scene="Сцена B, светлые экраны, рендеры и фото">
+<section class="flat ride-a" data-chap="03 У дома есть автор" data-dock="img/b1-portrait.jpg" data-dock-t="03 Автор" data-scene="Сцена B, светлые экраны, рендеры и фото">
   <div class="wrap">
     <div class="row">
       <div class="c5"><div class="ph h520"><img src="img/b1-portrait.jpg" alt="Максим Липатников"><span class="cap">Кадр B1, портрет из чата, нужна съёмка</span></div></div>
@@ -253,7 +294,7 @@ footer p{margin:0 0 6px}
   </div>
 </section>
 
-<section class="flat grey" id="price" data-chap="04 Цена" data-scene="Сцена B, светлые экраны, рендеры и фото">
+<section class="flat grey ride" id="price" data-chap="04 Цена" data-dock="img/b1-card-1.jpg" data-dock-t="04 Цена" data-scene="Сцена B, светлые экраны, рендеры и фото">
   <div class="wrap">
     <div class="cs"><span class="n">04</span><span>Цена</span><span class="r">130 000 ₽ за м² тёплого контура</span></div>
     <div class="row" style="align-items:start">
@@ -268,7 +309,7 @@ footer p{margin:0 0 6px}
   </div>
 </section>
 
-<section class="scene" id="term" style="height:320vh" data-chap="05 Почему 6 месяцев" data-scene="Сцена B, завод и участок одновременно, рисунок из теста">
+<section class="scene ride" id="term" style="height:320vh" data-chap="05 Почему 6 месяцев" data-dock="img/b2-stage-1.jpg" data-dock-t="05 Шесть месяцев" data-scene="Сцена B, завод и участок одновременно, рисунок из теста">
   <div class="stage light5">
     <div class="wrap5">
       <div class="cs"><span class="n">05</span><span>Почему 6 месяцев</span><span class="r">завод и участок одновременно</span></div>
@@ -296,7 +337,7 @@ footer p{margin:0 0 6px}
 </section>
 
 <!-- ПЕРЕХОД B → C: из рендера в фото -->
-<section class="scene" id="bc" style="height:220vh" data-chap="Переход B → C" data-scene="из рендера в фото того же дома">
+<section class="scene ride" id="bc" style="height:220vh" data-chap="Переход B → C" data-scene="из рендера в фото того же дома">
   <div class="stage">
     <div class="layer" id="bc1"><img src="img/bc-render.jpg" alt="Алексино, рендер"><div class="src" style="opacity:1">Переход. Алексино, рендер по модели (Higgsfield)</div></div>
     <div class="layer" id="bc2" style="opacity:0"><img src="img/b2-stage-1.jpg" alt="Алексино, фото"><div class="src" style="opacity:1">Переход. Алексино, фото выставочного дома в тёплом контуре</div></div>
@@ -305,7 +346,7 @@ footer p{margin:0 0 6px}
 </section>
 
 <!-- СЦЕНА C: материал. Одно фото, наезд -->
-<section class="scene" id="sceneC" style="height:400vh" data-chap="06 Стена" data-scene="Сцена C, одно фото, наезд в материал">
+<section class="scene ride" id="sceneC" style="height:400vh" data-chap="06 Стена" data-dock="img/bc-render.jpg" data-dock-t="06 Стена" data-scene="Сцена C, одно фото, наезд в материал">
   <div class="stage">
     <div class="layer" id="c1"><img src="img/c1-facade-seams.jpg" alt="Фасад со швами"><div class="src" style="opacity:1">Кадр C1, фото стройки клиента. На сайте фасад со швами в высоком разрешении</div></div>
     <div class="layer" id="c2" style="opacity:0"><img src="img/c2-concrete.jpg" alt="Бетон крупно"><div class="src" style="opacity:1">Кадр C2, подмена: MIR Casa Ohana, бетон и вечерний свет. На сайте наш фасад крупно</div></div>
@@ -322,7 +363,7 @@ footer p{margin:0 0 6px}
 </section>
 
 <!-- ПЕРЕХОД C → D: отъезд до дрона -->
-<section class="scene" id="cd" style="height:200vh" data-chap="Переход C → D" data-scene="отъезд от материала до дома с дрона">
+<section class="scene ride" id="cd" style="height:200vh" data-chap="Переход C → D" data-scene="отъезд от материала до дома с дрона">
   <div class="stage">
     <div class="layer" id="cd1"><img src="img/c2-concrete.jpg" alt=""></div>
     <div class="layer" id="cd2" style="opacity:0"><img src="img/d1-drone.jpg" alt="Алексино с дрона"><div class="src" style="opacity:1">Переход. Алексино с дрона, фото клиента</div></div>
@@ -331,7 +372,7 @@ footer p{margin:0 0 6px}
 </section>
 
 <!-- СЦЕНА D: вживую и кто -->
-<section class="flat" id="live" data-chap="07 Вживую" data-scene="Сцена D, фото и списки">
+<section class="flat ride" id="live" data-chap="07 Вживую" data-dock="img/b1-card-3.jpg" data-dock-t="07 Вживую" data-scene="Сцена D, фото и списки">
   <div class="wrap">
     <div class="cs"><span class="n">07</span><span>Вживую</span><span class="r">выставочный дом в Алексино</span></div>
     <div class="row">
@@ -342,7 +383,7 @@ footer p{margin:0 0 6px}
   </div>
 </section>
 
-<section class="scene" id="who" style="height:160vh" data-chap="08 Кто за домом" data-scene="Сцена D, фото и списки">
+<section class="scene ride" id="who" style="height:160vh" data-chap="08 Кто за домом" data-dock="img/b1-card-2.jpg" data-dock-t="08 Кто за домом" data-scene="Сцена D, фото и списки">
   <div class="stage">
     <div class="layer" id="d2"><img src="img/d2-factory-wide.jpg" alt="Завод"><div class="src" style="opacity:1">Кадр D2, цех завода, фото клиента, нужна съёмка</div></div>
     <div class="strip" style="opacity:1"><span class="n">08</span><span>Кто за домом</span><span class="r">ФинСтройПанель, свой завод</span></div>
@@ -390,6 +431,8 @@ footer p{margin:0 0 6px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Observer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/CustomEase.min.js"></script>
 <script>
 (function(){
   if (!window.gsap || !window.ScrollTrigger) return;
@@ -399,49 +442,218 @@ footer p{margin:0 0 6px}
   const chap = $('#chap'), scene = $('#scene');
   const setChap = (c, s) => { if (c) chap.textContent = c; if (s) scene.textContent = s; };
 
-  /* Сцена A: один таймлайн, прокрутка ведёт. Время сцены (доли прокрутки 700vh) одно для текстов и для канваса (SA) */
+  /* Сцена A: один таймлайн, прокрутка ведёт. Время сцены задано в секундах (Максим 27.10: три щелчка, с отделкой четыре, вся сцена — цепочка
+     синусов: каждая часть с плавным началом и мягкой остановкой, следующая начинается там, где кончилась предыдущая, без пауз).
+     В шаге прокрутка идёт ровно, поэтому секунды и доли прокрутки пропорциональны: SA — доли, T(сек) — перевод */
+  /* Темп сцены A (Максим 27.10, принят вариант 7 после двух неудачных заходов с изингами: «фон уходит невероятно быстро,
+     дом в чертёж за полсекунды, фасад — зюк, а пролёт долгий»; потом «пятый нравится, чуть-чуть ускорить проявление и скрытие»).
+     Проявления ведутся по заметности (модуль, revealQ): заметная перемена идёт ровно по синусу всю длительность части.
+     Перелёты короче проявлений, на своей кривой: мягкий старт, пик скорости 2,1 (у синуса 1,6), долгая посадка.
+     Части друг за другом с небольшим нахлёстом: следующая трогается на 94 % предыдущей, фото — когда камера прошла 98 % пути
+     (кадр снят с точки остановки). Фасад 2,8 с: сначала дом целиком, потом всё вокруг (модуль, customOrder).
+     Прежний темп (синусы встык) — на Pages и в бэкапе pered-izingami */
+  if (window.CustomEase) {
+    gsap.registerPlugin(CustomEase);
+    CustomEase.create('fsp.glide', '.45,0,.4,1');   // перелёты: пик скорости 2,1, 95 % пути к 79 % времени, дальше посадка
+    CustomEase.create('fsp.out', '.3,0,.2,1');      // уход текстов в начале шага, коротко и мягко
+  }
+  const EZV = window.EZV = { cam: window.CustomEase ? 'fsp.glide' : 'power2.inOut', fx: 'sine.inOut', text: 'sine.inOut', out: window.CustomEase ? 'fsp.out' : 'sine.out', area: true };
+  // части сцены в секундах [начало, конец]: b фон, h дом в чертёж, o облёт, f фасад, fd фасад уходит, w влёт, c тёплый контур,
+  // fin отделка, cd гостиная уходит, r подъём, pl план; stops — остановки колеса
+  // фасад 2,8 с (Максим 27.10: «дом и окружение проявляются слишком быстро, не презентабельно — чуть замедлить»; было 2,3);
+  // уход фасада такой же, 2,8 с («первая анимация — давай вторую такую же»; было 1,41).
+  // Проявление фасада — зеркало ухода («уход супер сочный, первую переделать под него»): дом начинает проявляться,
+  // пока камера досаживается после облёта (с 3,6 с; при уходе камера так же трогается до конца растворения дома)
+  // отделка (Максим 27.10: «переход делаем такой же, как он был в аниматике») — свой щелчок после тёплого контура: второй слой
+  // проявляется поверх бетона по глубине модели, от ближнего пола к окну, своими пятнами; 2,5 с, по заметности, как прочие проявления
+  // мебель (Максим 27.10: «скролишь — появляется отделанный интерьер, и сразу же после этого мебель, и уже после этого надписи»):
+  // fu — третий слой поверх отделки в том же щелчке, трогается на 90 % отделки, 2 с; надписи гостиной — на 55 % мебели.
+  // Тёплый контур во втором щелчке теперь без надписей. Всё после мебели позже на 1,75 с
+  // Потом (Максим 27.10): «окно с террасой заполняется слишком быстро, жух — чуть помедленнее, финал поправить» → мебель 2,4 с,
+  // терраса в окне идёт со второй половиной мебели (модуль, prepFurn); «появление размеров плавнее; финал отдаления камеры чуть
+  // быстрее, в конце пустое время» → подъём 1,6 с вместо 2,2, размерные линии прорисовываются по очереди уже на посадке камеры
+  // (за 0,8 с до её конца), цифры и площади по одной, шаг кончается сразу за последней площадью
+  // Фасад → готовый интерьер — теперь один щелчок (STEPS ниже), поэтому стык «тёплый контур → отделка» без паузы: замер показал
+  // 0,4 с неподвижного экрана (контур досаживается, отделка ещё не тронулась) — отделка и всё после неё раньше на 0,3 с.
+  // stops[1] остался только внутренней точкой шага.
+  // Мебель с чертежом (Максим 27.10: «сначала белый чертёж с чёрными линиями, снизу его тут же заполняет картинка») — две волны,
+  // поэтому шаг мебели 3,0 с вместо 2,4 (чертёж 0…70 %, фото 30…100 %), всё после мебели позже на 0,6 с
+  const P0 = { stops: [6.5, 13.05, 18.1, 22.3],
+    b: [0, 1.67], h: [1.05, 2.63], o: [2.54, 4.04], f: [3.6, 6.4], fd: [6.5, 9.3], w: [8.86, 11.16], c: [11.01, 12.95], fin: [12.75, 15.25],
+    fu: [15.0, 18.0], cd: [18.1, 19.51], r: [19.29, 20.89], pl: [20.09, 22.25] };   // последняя площадь проявляется к 22,25
+  // Нахлёст и темп первых двух щелчков (Максим 27.10). Сначала: «не сначала фон пропадал, а потом дом: фон почти пропал — и начинает
+  // уже дом пропадать» (замер: между фазами экран замирал на 0,3 с). Потом: «нравится с наложением; начало чуть побыстрее и ещё сильнее
+  // наложить; фасад, когда появляется, — тоже побыстрее; уход фасада ближе всего к тому, что хочу, его ускорить чуть-чуть, первые два
+  // — чуть больше». Каждая фаза — своя длительность × K (изинг тот же), вторая фаза трогается на доле OV длины первой.
+  // Фасад: проявление — зеркало ухода (Максим раньше: «уход супер сочный, первую переделать под него»)
+  const K_A1 = 0.85, K_FR = 0.9, K_FD = 0.9;   // начало сцены, проявление фасада, уход фасада (замер заметной перемены 10–90 %: −26 %, −24 %, −10 %)
+  const OV_A1 = 0.33, OV_F = 0.594;          // дом в чертёж трогается на 33 % ухода фона (было 63 %, потом 45 %); фасад — на 59 % первой фазы
+  const PH = 0.56 * (P0.f[1] - P0.f[0]);     // фаза фасада (дом или окружение) в прежнем темпе, 1,568 с
+  const bD = (P0.b[1] - P0.b[0]) * K_A1, hD = (P0.h[1] - P0.h[0]) * K_A1, h0 = OV_A1 * bD;
+  const o0 = h0 + hD - (P0.h[1] - P0.o[0]), oD = P0.o[1] - P0.o[0];          // облёт трогается, пока дом досаживается (0,09 с), как было
+  const f0 = o0 + oD - (P0.o[1] - P0.f[0]), FR_PH = PH * K_FR, FR_L = (1 + OV_F) * FR_PH;   // фасад — пока камера садится (0,44 с)
+  const s0 = f0 + FR_L + (P0.stops[0] - P0.f[1]), FD_PH = PH * K_FD, FD_L = (1 + OV_F) * FD_PH;
+  const dS = s0 + FD_L - P0.fd[1];            // всё после ухода фасада — раньше на столько же
+  const P = { stops: [s0, ...P0.stops.slice(1).map((x) => x + dS)], b: [0, bD], h: [h0, h0 + hD], o: [o0, o0 + oD], f: [f0, f0 + FR_L],
+    fd: [s0, s0 + FD_L] };
+  for (const k of ['w', 'c', 'fin', 'fu', 'cd', 'r', 'pl']) P[k] = P0[k].map((x) => x + dS);
+  // Тёплый контур → отделка → мебель внахлёст (Максим 28.10, правка Димы: «наложить все этапы чуть-чуть друг на друга»; по его
+  // скриншоту отделка трогается, когда пол тёплого контура заполнился примерно на четверть — это 25 % времени контура, сверено
+  // кадрами; мебель — «на таком же отдалении», на 25 % отделки). Было: отделка на 90 % контура, мебель на 90 % отделки.
+  // Длительности слоёв прежние, всё после мебели (уход гостиной, подъём, план, остановки) раньше на столько же
+  const OV_IN = 0.25;
+  {
+    const finL = P.fin[1] - P.fin[0], fuL = P.fu[1] - P.fu[0], fuEnd = P.fu[1];
+    const fin0 = P.c[0] + OV_IN * (P.c[1] - P.c[0]), fu0 = fin0 + OV_IN * finL;
+    P.fin = [fin0, fin0 + finL]; P.fu = [fu0, fu0 + fuL];
+    const d = P.fu[1] - fuEnd;
+    for (const k of ['cd', 'r', 'pl']) P[k] = P[k].map((x) => x + d);
+    P.stops[2] += d; P.stops[3] += d;
+  }
+  // Варианты темпа (Максим 30.10, правка Димы: «сейчас 13 с до готового интерьера, хочет короче; 8 — слишком быстро, быстрые
+  // анимации не делаем; наложить части друг на друга, где-то чуть ускорить; мебель — уже в процессе черчения»).
+  // По умолчанию tk=5 (Максим 02.11), ?tk=0 — прежний темп. Кривые частей те же; меняются нахлёст и длительности:
+  // k1 — первый шаг ровно быстрее в 1/k1 раз; fdK — длительность ухода фасада (влёт — с прежним отставанием); wK — длительность влёта;
+  // ovIn — нахлёст контур → отделка → мебель (было 0,25); fuK — длительность шага мебели (было 3,0 с);
+  // lead — доля шага мебели, на которую чертёж впереди фото (было 0,3: меньше — фото раньше выходит на чертёж); finK — длительность отделки;
+  // gap — мебель кончается не раньше, чем через столько после отделки; txu/txd — текст гостиной: доля шага мебели и длительность;
+  // k3 — третий шаг (уход гостиной, подъём, план) ровно быстрее в 1/k3 раз
+  const TK = ({ 1: { k1: 1, fdK: 0.95, wK: 0.9, ovIn: 0.18, fuK: 0.9, lead: 0.25 },
+    2: { k1: 1, fdK: 0.9, wK: 0.85, ovIn: 0.12, fuK: 0.82, lead: 0.2 },
+    3: { k1: 0.92, fdK: 0.88, wK: 0.82, ovIn: 0.1, fuK: 0.78, lead: 0.18, finK: 0.9 },
+    4: { k1: 0.85, fdK: 0.85, wK: 0.78, ovIn: 0.08, fuK: 0.72, lead: 0.15, finK: 0.85 },
+    5: { k1: 0.77, fdK: 0.85, wK: 0.78, ovIn: 0.08, fuK: 0.62, lead: 0.15, finK: 0.72, gap: 0.3, txu: 0.54, txd: 0.33, k3: 0.6 } })[new URLSearchParams(location.search).get('tk') ?? '5'];   // Максим 02.11: tk5 — главный
+  if (TK) {
+    const sh = (keys, d) => { for (const k of keys) P[k] = P[k].map((x) => x + d); };
+    const LATE = ['w', 'c', 'fin', 'fu', 'cd', 'r', 'pl'];
+    if (TK.k1 !== 1) {   // первый шаг: всё до остановки фасада — в k1, всё после — раньше на столько же
+      const s0 = P.stops[0], d0 = s0 * (TK.k1 - 1);
+      for (const k of ['b', 'h', 'o', 'f']) P[k] = P[k].map((x) => x * TK.k1);
+      P.fd = P.fd.map((x) => x + d0); sh(LATE, d0); P.stops = P.stops.map((x) => x + d0);
+    }
+    // уход фасада короче в fdK, влёт — с тем же отставанием от его конца (раньше нельзя: кусок фото фасада висел бы на месте)
+    const fdD = (P.fd[1] - P.fd[0]) * (1 - TK.fdK); P.fd = [P.fd[0], P.fd[1] - fdD]; sh(LATE, -fdD); for (let i = 1; i < 4; i++) P.stops[i] -= fdD;
+    const w0 = P.w[0], wD = (P.w[1] - P.w[0]) * TK.wK, dW = w0 + wD - P.w[1];
+    P.w = [w0, w0 + wD]; sh(['c', 'fin', 'fu', 'cd', 'r', 'pl'], dW); for (let i = 1; i < 4; i++) P.stops[i] += dW;
+    const finL = (P.fin[1] - P.fin[0]) * (TK.finK || 1), fuL = (P.fu[1] - P.fu[0]) * TK.fuK, fuEnd = P.fu[1];
+    const fin0 = P.c[0] + TK.ovIn * (P.c[1] - P.c[0]), fu0 = fin0 + TK.ovIn * finL;
+    P.fin = [fin0, fin0 + finL]; P.fu = [fu0, fu0 + fuL];
+    const gap = TK.gap || 0.4; if (P.fu[1] < P.fin[1] + gap) P.fu = P.fu.map((x) => x + P.fin[1] + gap - P.fu[1]);   // мебель кончается после отделки
+    const d = P.fu[1] - fuEnd; sh(['cd', 'r', 'pl'], d); P.stops[2] += d; P.stops[3] += d;
+    if (TK.k3) {   // третий шаг (гостиная уходит → подъём → план) ровно быстрее
+      const a = P.stops[2]; for (const k of ['cd', 'r', 'pl']) P[k] = P[k].map((x) => a + (x - a) * TK.k3); P.stops[3] = a + (P.stops[3] - a) * TK.k3;
+    }
+    window.FURN_LEAD = TK.lead;
+  }
+  for (const k of Object.keys(P)) P[k] = P[k].map((x) => +x.toFixed(3));
+  const TT = P.stops[3], T = (s) => s / TT;
   const SA = window.SA = {
-    a1dis0:0.03, a1dis1:0.11,          // кадр A1 растворяется в линии (низ кадра уходит последним, под текстом)
-    tr1a:0.11, tr1b:0.26,              // наезд: та же точка камеры «кадр 5», угол сужается с 50 мм к 32 мм
-    a2rev0:0.26, a2rev1:0.33,          // из линий проявляется фасад
-    a2dis0:0.48, a2dis1:0.54,          // фасад уходит в линии
-    tr2a:0.54, tr2b:0.66,              // камера сквозь угловое окно к камере M
-    a3c0:0.66, a3c1:0.72,              // бетон
-    a3f0:0.74, a3f1:0.80,              // отделка
-    a3dis0:0.84, a3dis1:0.89,          // гостиная уходит в линии
-    tr3a:0.89, tr3b:0.95,              // подъём строго вверх, кровля уходит
-    a4rev0:0.95, a4rev1:0.985,         // лист плана проявляется
+    // щелчок 1: фон уходит от дома к краям → дом в чертёж → облёт на другую сторону → проявляется фасад, надписи
+    a1dis0:T(P.b[0]), a1bg1:T(P.b[1]), a1h0:T(P.h[0]), a1dis1:T(P.h[1]), tr1a:T(P.o[0]), tr1b:T(P.o[1]), a2rev0:T(P.f[0]), a2rev1:T(P.f[1]),
+    // щелчок 2: надписи и фасад уходят → облёт к угловому окну А и влёт в гостиную → тёплый контур → надписи
+    a2dis0:T(P.fd[0]), a2dis1:T(P.fd[1]), tr2a:T(P.w[0]), tr2b:T(P.w[1]), a3c0:T(P.c[0]), a3c1:T(P.c[1]),
+    // щелчок 3: отделка поверх тёплого контура, сразу за ней мебель, потом надписи
+    a3f0:T(P.fin[0]), a3f1:T(P.fin[1]), a3m0:T(P.fu[0]), a3m1:T(P.fu[1]),
+    // щелчок 4: гостиная уходит в линии → подъём строго вверх → план в линиях модели, размеры и площади
+    a3dis0:T(P.cd[0]), a3dis1:T(P.cd[1]), tr3a:T(P.r[0]), tr3b:T(P.r[1]), a4rev0:T(P.pl[0]), a4rev1:T(P.pl[1]),
+    frSplit:[FR_PH / FR_L, 1 - FR_PH / FR_L], fdSplit:[FD_PH / FD_L, 1 - FD_PH / FD_L],
+    steps:[0, T(P.stops[0]), T(P.stops[1]), T(P.stops[2]), 1], stopSec: P.stops, T,
   };
-  const A = gsap.timeline({ scrollTrigger:{ trigger:'#sceneA', start:'top top', end:'bottom bottom', scrub:0.6,
+  // тексты [секунда, длительность]: когда кадр проявился наполовину, мягко за 0,8 с, выноски построчно через 0,1 с; уход в начале шага
+  const at = (a, k) => a[0] + k * (a[1] - a[0]);
+  const X = (() => { const f = at(P.f, 0.5), u = at(P.fu, TK && TK.txu || 0.65), l = at(P.pl, 0.5), TD = TK && TK.txd || 0.8, K3 = TK && TK.k3 || 1;
+    return { s1: [f, 0.8], srcA2: [f + 0.05, 0.5], t2: [f, 0.8], co: [[f + 0.25, 0.6], [f + 0.35, 0.6], [f + 0.45, 0.6]], out1: [P.stops[0], 0.45],
+      s2: [u, TD], t3: [u, TD], srcA3f: [u + 0.05, Math.min(0.5, TD)], out2: [P.stops[2], 0.45], s3: [l, 0.8], t4: [l + 0.05, 0.8],
+      dimL: [P.pl[0], 1.6 * K3], dimN: [P.pl[0] + 0.5 * K3, 1.4 * K3], dimA: [P.pl[0] + 0.75 * K3, 1.4 * K3],   // [начало, длительность]: всё разом, внахлёст
+      tr: [[P.o[0] + 0.1, P.o[1] - 0.3, 0.3], [P.w[0] + 0.1, P.w[1] - 0.4, 0.3], [P.r[0] + 0.1, P.r[1] - 0.4, 0.3]] }; })();
+  const A = gsap.timeline({ defaults:{ ease:EZV.text }, scrollTrigger:{ trigger:'#sceneA', start:'top top', end:'bottom bottom', scrub:0.6,
     onUpdate(st){ const p = st.progress;
-      setChap(p<0.26?'00 Первый экран':p<0.54?'01 Снаружи':p<0.89?'02 Внутри':'03 У дома есть автор', 'Сцена A, одна 3D-модель, одна камера'); } } });
+      setChap(p<SA.tr1a?'00 Первый экран':p<SA.tr2b?'01 Снаружи':p<SA.tr3a?'02 Внутри':'03 У дома есть автор', 'Сцена A, одна 3D-модель, одна камера'); } } });
   window.__A = A;
-  A.to('#t1',{opacity:0,duration:0.03},0.085)
-   .to('#srcA1',{opacity:0,duration:0.03},0.03)
-   /* 01: фасад */
-   .to('#srcA2',{opacity:1,duration:0.02},0.33)
-   .to('#s1',{opacity:1,duration:0.03},0.33)
-   .to('#t2',{opacity:1,duration:0.04},0.34)
-   .to('#co .co:nth-child(1)',{opacity:1,duration:0.03},0.38)
-   .to('#co .co:nth-child(2)',{opacity:1,duration:0.03},0.42)
-   .to('#co .co:nth-child(3)',{opacity:1,duration:0.03},0.45)
-   .to(['#t2','#s1','#co .co','#srcA2'],{opacity:0,duration:0.02},0.475)
-   /* 02: гостиная, бетон потом отделка */
-   .to('#srcA3c',{opacity:1,duration:0.02},0.70)
-   .to('#srcA3c',{opacity:0,duration:0.02},0.745)
-   .to('#srcA3f',{opacity:1,duration:0.02},0.78)
-   .to('#s2',{opacity:1,duration:0.03},0.74)
-   .to('#t3',{opacity:1,duration:0.04},0.75)
-   .to(['#t3','#s2','#srcA3f'],{opacity:0,duration:0.025},0.825)
-   /* 03: лист плана */
-   .to('#srcA4',{opacity:1,duration:0.02},0.985)
-   .to('#s3',{opacity:1,duration:0.02},0.965)
-   .to('#t4',{opacity:1,duration:0.025},0.97)
-   .to('#stamp',{opacity:1,duration:0.02},0.98)
-   /* карточки переходов */
-   .to('#tr1',{opacity:1,duration:0.02},0.11).to('#tr1',{opacity:0,duration:0.02},0.245)
-   .to('#tr2',{opacity:1,duration:0.02},0.55).to('#tr2',{opacity:0,duration:0.02},0.645)
-   .to('#tr3',{opacity:1,duration:0.02},0.895).to('#tr3',{opacity:0,duration:0.02},0.945);
+  const tin = (sel, [t, d]) => A.to(sel, { opacity: 1, duration: T(d) }, T(t));
+  const tout = (sel, [t, d]) => A.to(sel, { opacity: 0, duration: T(d), ease: EZV.out }, T(t));
+  tout('#t1', [0.35, 0.45]); tout('#srcA1', [0.15, 0.2]);
+  /* 01: фасад */
+  tin('#s1', X.s1); tin('#srcA2', X.srcA2); tin('#t2', X.t2);
+  X.co.forEach((c, i) => tin(`#co .co:nth-child(${i + 1})`, c));
+  tout(['#t2', '#s1', '#co .co', '#srcA2'], X.out1);
+  /* 02: гостиная, тёплый контур без надписей; следующим щелчком отделка, сразу мебель и после неё надписи; держатся до ухода гостиной */
+  tin('#s2', X.s2); tin('#t3', X.t3); tin('#srcA3f', X.srcA3f);
+  tout(['#t3', '#s2', '#srcA3f'], X.out2);
+  /* 03: план сверху в линиях модели (Максим 27.10: «не переходить в полный чертёж, добавить линии с размерами по бокам,
+     площади комнат; лишние надписи с чертежа убрать, справа никаких надписей»). Размерные линии прорисовываются, потом цифры и площади */
+  tin('#s3', X.s3); tin('#t4', X.t4);
+  // Максим 27.10: «не тик-тик-тик, а постепенно, плавно — от прозрачности к насыщенному цвету». Всё разом, без очереди:
+  // линии проявляются из прозрачности (и чуть дотягиваются), цифры и площади — одной общей мягкой волной внахлёст
+  A.fromTo('#dims .dl', { opacity: 0, strokeDashoffset: 0.25 }, { opacity: 1, strokeDashoffset: 0, duration: T(X.dimL[1]), ease: EZV.fx }, T(X.dimL[0]));
+  for (const [sel, [t, d]] of [['#dims .dn text', X.dimN], ['#dims .da text', X.dimA]])
+    A.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: T(d), ease: EZV.fx }, T(t));
+  /* карточки переходов */
+  X.tr.forEach(([a, b, d], i) => { tin('#tr' + (i + 1), [a, d]); tout('#tr' + (i + 1), [b, d]); });
+  A   .set({}, {}, 1);   // длина таймлайна ровно 1: прогресс таймлайна = доля прокрутки = SA
+
+  /* Сцена A по шагам (Максим 27.10): один щелчок колеса, свайп или клавиша — один шаг, шаг доигрывает сам.
+     Ключи шага: [прогресс, секунды]; прокрутка в шаге идёт ровно (время сцены в SA уже в секундах), изинги — у частей сцены,
+     скраб 0.6 сглаживает старт и остановку. Назад — те же ключи в обратном порядке. ?free — прежняя свободная прокрутка */
+  const STEPS = [
+    { at: 0 },
+    { at: SA.steps[1], keys: [[SA.steps[1], SA.stopSec[0]]] },                    // фон уходит, чертёж, облёт, фасад, надписи
+    // Максим 27.10: «с фасада один скролл — и до полностью готового интерьера, на тёплом контуре ещё раз крутить не надо»:
+    // уход фасада, влёт, голый тёплый контур, отделка, мебель, надписи — один шаг (два отрезка ключей, прокрутка ровная)
+    { at: SA.steps[3], keys: [[SA.steps[2], SA.stopSec[1] - SA.stopSec[0]], [SA.steps[3], SA.stopSec[2] - SA.stopSec[1]]] },
+    { at: 1, keys: [[1, SA.stopSec[3] - SA.stopSec[2]]] },                       // подъём к плану
+  ];
+  const qsA = new URLSearchParams(location.search);
+  if (window.Observer && !qsA.has('p') && !qsA.has('free')) {
+    gsap.registerPlugin(Observer);
+    const st = A.scrollTrigger;
+    const yOf = (p) => Math.min(st.end - 1, st.start + p * (st.end - st.start));   // на последнем шаге не выходим за конец: иначе срабатывает onLeave и шаги выключаются
+    const nearest = (p) => STEPS.reduce((b, s, i) => (Math.abs(s.at - p) < Math.abs(STEPS[b].at - p) ? i : b), 0);
+    const pos = { p: 0 };
+    let busy = false, fresh = true, lastEvt = 0;
+    // один жест — один шаг: новый жест, когда между событиями пауза (хвост инерции трекпада шага не запускает)
+    const mark = () => { const t = performance.now(); if (t - lastEvt > 220) fresh = true; lastEvt = t; };
+    window.addEventListener('wheel', mark, { passive: true });
+    window.addEventListener('touchstart', () => { fresh = true; lastEvt = performance.now(); }, { passive: true });
+    function play(dir) {
+      if (busy || !fresh) return;
+      fresh = false;
+      const cur = st.progress, i = nearest(cur), to = i + dir;
+      if (to < 0) return;
+      if (to >= STEPS.length) { release(); return; }
+      const s = dir > 0 ? STEPS[to] : STEPS[i];
+      const p0 = dir > 0 ? STEPS[i].at : STEPS[to].at;
+      // отрезки шага: вперёд [p0 → k1 → … → at], назад те же в обратном порядке с теми же длительностями
+      let segs = s.keys.map(([p, d], k) => ({ from: k ? s.keys[k - 1][0] : p0, to: p, d }));
+      if (dir < 0) segs = segs.reverse().map((g) => ({ from: g.to, to: g.from, d: g.d }));
+      segs = segs.filter((g) => (dir > 0 ? g.to > cur + 1e-4 : g.to < cur - 1e-4));
+      if (!segs.length) return;
+      busy = true; pos.p = cur;
+      const tl = gsap.timeline({ onUpdate: () => window.scrollTo(0, yOf(pos.p)), onComplete: () => { busy = false; } });
+      segs.forEach((g, k) => {   // первый отрезок может начаться с середины (вошли в сцену снизу, тянули ползунок): длительность по остатку
+        const part = k === 0 && Math.abs(g.to - g.from) > 1e-6 ? Math.min(1, Math.abs(g.to - cur) / Math.abs(g.to - g.from)) : 1;
+        tl.to(pos, { p: g.to, duration: g.d * part, ease: 'none' });
+      });
+    }
+    const obs = Observer.create({ target: window, type: 'wheel,touch', wheelSpeed: -1, tolerance: 10, preventDefault: true,
+      onUp: () => play(1), onDown: () => play(-1) });
+    // ниже сцены — обычная прокрутка; вернулись в сцену снизу — снова шаги
+    function release() {
+      obs.disable(); busy = true;
+      const y = { v: window.scrollY };
+      gsap.to(y, { v: y.v + window.innerHeight * 0.6, duration: 0.7, ease: 'power2.out', onUpdate: () => window.scrollTo(0, y.v), onComplete: () => { busy = false; } });
+    }
+    ScrollTrigger.create({ trigger: '#sceneA', start: 'top top', end: 'bottom bottom', onEnterBack: () => obs.enable(), onLeave: () => obs.disable() });
+    window.addEventListener('keydown', (e) => {
+      if (!obs.isEnabled || e.altKey || e.ctrlKey || e.metaKey) return;
+      const d = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
+      if (!d) return;
+      e.preventDefault(); fresh = true; play(d);
+    });
+    // открыли страницу посреди сцены: встать на ближайший шаг
+    requestAnimationFrame(() => { if (window.scrollY < st.end) window.scrollTo(0, yOf(STEPS[nearest(st.progress)].at)); });
+    window.__steps = { STEPS, play, obs };
+  }
 
   /* Переход B → C */
   gsap.timeline({scrollTrigger:{trigger:'#bc',start:'top top',end:'bottom bottom',scrub:0.6}})
@@ -494,8 +706,144 @@ footer p{margin:0 0 6px}
   tabs.forEach(b => b.addEventListener('click',()=>setStage(+b.dataset.i)));
   ScrollTrigger.create({trigger:'#price',start:'top 40%',end:'bottom 60%',onUpdate(st){ setStage(Math.min(2,Math.floor(st.progress*3))); }});
 
+  /* Фото автора идёт с нами (Максим 30.10: «картинка по левому краю перемещается всё время, такая же по размерам, меняется
+     справа налево; полоска плавно вытаскивает фотографию из борта и замещает её — предыдущая не уезжает, а съедается»).
+     Место портрета (.ph в главе 03) липнет по центру окна (pin, без добавки прокрутки) до конца главы 08, главы 04–08 стоят
+     справа от него. У главы data-dock — кадр, data-dock-t — подпись; глава срабатывает, когда её верх доходит до 70 % окна,
+     назад — когда к 70 % возвращается её низ (устройство виджета telhaclarke). ?nodock — без него.
+     02.11, Дима: «через один div, внутри которого три div, как в Фигме; плавнее; inset; следующий кадр в opacity, проявляется вместе с линией».
+     Как в кадрах photo Фигмы (180:65…180:103): все кадры лежат в одном блоке, в одной ячейке сетки, первый сверху (порядок в DOM обратный).
+     Верхний стоит на месте и обрезается clip-path: inset справа налево; нижний лежит сразу под ним, выдвигается за линией и проявляется
+     на чёрном: сдвиг 36 % ширины → 0 (в Фигме +55 px при линии на 155 из 342), opacity 0.2 → 1 (в Фигме чёрный 40 % на середине хода).
+     Назад — та же анимация обратно. Темп — наш синус EZV.fx (чужие кривые не берём), 1,8 с */
+  const rideBlocks = $$('[data-dock]').filter((b) => b.dataset.dock);
+  const slot = rideBlocks.length ? rideBlocks[0].querySelector('.ph') : null;
+  if (slot && !new URLSearchParams(location.search).has('nodock')) {
+    const RIDE_D = 1.8, OPEN = 'inset(0% 0% 0% 0%)', SHUT = 'inset(0% 100% 0% 0%)', textCol = rideBlocks[0].querySelector('.c6');
+    const setL = () => document.documentElement.style.setProperty('--ride-l', Math.round(textCol.getBoundingClientRect().left) + 'px');
+    setL(); ScrollTrigger.addEventListener('refreshInit', setL);
+    slot.classList.add('rd');
+    const cap = slot.querySelector('.cap');
+    const L = rideBlocks.map((b, i) => {
+      const w = document.createElement('div'), im = i ? new Image() : slot.querySelector('img'), g = document.createElement('i'), t = document.createElement('span');
+      w.className = 'rd-i'; g.className = 'rd-g'; t.className = 'rd-t'; t.textContent = b.dataset.dockT || '';
+      if (i) { im.alt = ''; im.src = b.dataset.dock; }
+      w.append(im, g, t); if (!i && cap) w.append(cap);
+      slot.prepend(w);
+      return { w, im };
+    });
+    let cur = 0, run = null, want = -1;
+    const swap = (j) => {
+      if (run) { want = j; return; }   // прежняя смена не доиграла (быстрая прокрутка): не обрываем (был скачок), новая — сразу за ней
+      if (j === cur) return;
+      const a = Math.min(cur, j), b = Math.max(cur, j), up = L[a], low = L[b], back = j < cur;
+      L.forEach((l, i) => { if (i > a && i < b) gsap.set(l.w, { clipPath: SHUT }); });   // кадры между ними (перескок глав) не мешают: нижний сразу под верхним
+      cur = j;
+      const end = () => {
+        gsap.set(low.im, { clearProps: 'transform,opacity' });
+        L.forEach((l, i) => gsap.set(l.w, { clipPath: i < cur ? SHUT : OPEN }));   // выше текущего — убраны, ниже — ждут под ним
+        run = null;
+        if (want >= 0) { const k = want; want = -1; swap(k); }
+      };
+      run = gsap.timeline({ paused: true, defaults: { duration: RIDE_D, ease: EZV.fx }, onComplete: end, onReverseComplete: end })
+        .fromTo(up.w, { clipPath: OPEN }, { clipPath: SHUT }, 0)
+        .fromTo(low.im, { xPercent: 36, opacity: 0.2 }, { xPercent: 0, opacity: 1 }, 0);
+      if (back) run.progress(1, true).reverse(); else run.play();
+    };
+    const pinST = ScrollTrigger.create({ trigger: slot, start: 'center center', endTrigger: '#who',
+      end: () => 'bottom ' + Math.round((innerHeight + slot.offsetHeight) / 2) + 'px',
+      pin: true, pinSpacing: false, pinReparent: true, invalidateOnRefresh: true });
+    rideBlocks.forEach((b, i) => ScrollTrigger.create({ trigger: b, start: 'top 70%', end: 'bottom 70%', onEnter: () => swap(i), onEnterBack: () => swap(i) }));
+    window.__ride = { L, swap, slot, pinST, get run() { return run; } };
+    // ?rd — вкладка для показа: сразу на остановке «портрет прилип», один жест — смена фото
+    // (скрытая панель браузера грузит страницу при окне 0×0, остановка потом считается заново — встаём на неё после каждого пересчёта, пока не листали)
+    if (new URLSearchParams(location.search).has('rd')) {
+      const go = () => { if (window.__ready && innerHeight > 0) window.scrollTo(0, pinST.start); };
+      const t = setInterval(() => { if (window.__ready && innerHeight > 0) { clearInterval(t); setTimeout(go, 500); } }, 200);
+      ScrollTrigger.addEventListener('refresh', go);
+      ['wheel', 'touchstart', 'keydown'].forEach((ev) => addEventListener(ev, () => ScrollTrigger.removeEventListener('refresh', go), { once: true, passive: true }));
+    }
+  }
+
+  /* Вторая страница шагами (Максим 30.10: «на второй странице тоже через ScrollTrigger, чтобы листалась сама вся, и фотки
+     перелистывались так же»): ниже сцены A один жест — плавная прокрутка к следующей остановке, как шаги сцены A; фото меняются
+     по дороге своими триггерами. Остановки: конец сцены A (план), портрет прилип, начало глав, у «Почему 6 месяцев» и «Стены» —
+     ещё конец их внутренней прокрутки; переходы B→C, C→D проезжаются насквозь. Синус EZV.fx, 0,9 с на экран (1…3 с).
+     Назад с первой остановки — в сцену A, там снова её шаги. ?free и ?p= — без шагов */
+  if (window.Observer && !qsA.has('p') && !qsA.has('free')) {
+    const stA = A.scrollTrigger;
+    const stops2 = () => {
+      const vh = innerHeight, Y = (el) => el.getBoundingClientRect().top + scrollY, out = [Math.round(stA.end)];
+      if (window.__ride && window.__ride.pinST) out.push(Math.round(window.__ride.pinST.start));
+      for (const sec of $$('section[data-chap]')) {
+        const c = sec.dataset.chap;
+        if (sec.id === 'sceneA' || c.startsWith('Переход') || c.startsWith('03')) continue;
+        const y0 = Y(sec), run = sec.offsetHeight - vh;
+        if (sec.id === 'term') out.push(Math.round(y0), Math.round(y0 + run));
+        else if (sec.id === 'sceneC') out.push(Math.round(y0 + run * 0.2), Math.round(y0 + run));
+        else out.push(Math.round(y0));
+      }
+      out.push(document.documentElement.scrollHeight - vh);
+      return [...new Set(out)].sort((a, b) => a - b);
+    };
+    let busy2 = false, fresh2 = true, last2 = 0;
+    addEventListener('wheel', () => { const t = performance.now(); if (t - last2 > 220) fresh2 = true; last2 = t; }, { passive: true });
+    addEventListener('touchstart', () => { fresh2 = true; last2 = performance.now(); }, { passive: true });
+    const XF_D = 1.8;
+    const play2 = (dir) => {
+      if (busy2 || !fresh2) return;
+      fresh2 = false;
+      const S = stops2(), y = window.scrollY;
+      let to = dir > 0 ? S.find((v) => v > y + 4) : [...S].reverse().find((v) => v < y - 4);
+      if (to === undefined) return;
+      if (dir < 0 && to <= Math.round(stA.end)) to = stA.end - 1;   // назад в сцену A — там её шаги
+      busy2 = true;
+      const o = { v: y }, dur = Math.min(3, Math.max(1, Math.abs(to - y) / innerHeight * 0.9));
+      // Жест через «Переход B→C» и «Переход C→D» (Максим 02.11: «резкие переходы картинок, кадры 1480–1580 и 1900–2000»): проезд двух экранов
+      // за 3 с давал жёсткую линию между картинками и растворение за 20 кадров. Теперь без проезда: копия текущего экрана ложится поверх,
+      // страница под ней встаёт на следующую остановку, копия растворяется XF_D секунд нашим синусом. В ?free секции-переходы как были
+      const lo = Math.min(y, to), hi = Math.max(y, to);
+      if (['#bc', '#cd'].some((s) => { const t = $(s).getBoundingClientRect().top + y; return t >= lo && t <= hi; })) {
+        const sec = $$('section[data-chap]').find((s) => { const r = s.getBoundingClientRect(); return r.top <= 2 && r.bottom > 2; }), el = sec.querySelector('.stage') || sec, r = el.getBoundingClientRect();
+        const veil = document.createElement('div'), c = el.cloneNode(true);
+        veil.style.cssText = 'position:fixed;inset:0;overflow:hidden;z-index:20;pointer-events:none;opacity:0';
+        c.removeAttribute('id'); c.style.cssText += `;position:absolute;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;margin:0;min-height:0`;
+        veil.appendChild(c); document.body.appendChild(veil);
+        Promise.all([...c.querySelectorAll('img')].map((im) => im.decode().catch(() => {}))).then(() => {
+          veil.style.opacity = 1;   // копия пиксель в пиксель поверх оригинала, в этом же кадре страница встаёт на новую остановку
+          window.scrollTo(0, to); ScrollTrigger.update();
+          ScrollTrigger.getAll().forEach((st) => { const tw = st.getTween && st.getTween(); if (tw) tw.progress(1); });   // скраб сразу на месте, чтобы под копией ничего не ехало
+          gsap.to(veil, { opacity: 0, duration: XF_D, ease: EZV.fx, onComplete: () => { veil.remove(); busy2 = false; } });
+        });
+      } else
+      // ScrollTrigger.update сразу за прокруткой: иначе pin срабатывал на кадр позже и фото на кадр уезжало с прокруткой, потом прыгало обратно
+      gsap.to(o, { v: to, duration: dur, ease: EZV.fx, onUpdate: () => { window.scrollTo(0, o.v); ScrollTrigger.update(); }, onComplete: () => { busy2 = false; } });
+      // счётчик кадров и ниже сцены A (Максим 02.11: «здесь кадры не читаются»): кадр конца сцены + время шагов × 60;
+      // к каждому шагу 1,5 с запаса — смена фото может идти дольше прокрутки
+      if (to >= stA.end && window.__fcSet && window.SA) {
+        let f = Math.round(window.SA.stopSec[3] * 60);
+        const tab = S.map((v, i) => { if (i) f += Math.round((Math.min(3, Math.max(1, (v - S[i - 1]) / innerHeight * 0.9)) + 1.5) * 60); return f; });
+        const near = (v) => S.reduce((b, s, i) => (Math.abs(s - v) < Math.abs(S[b] - v) ? i : b), 0), fc = { v: tab[near(y)] }, f1 = tab[near(to)];
+        const show = () => window.__fcSet('кадр ' + Math.round(fc.v) + ' · ' + (fc.v / 60).toFixed(2).replace('.', ',') + ' с · ниже сцены A');
+        if (gsap.getById('fc2')) gsap.getById('fc2').kill();
+        show(); gsap.to(fc, { v: f1, duration: Math.abs(f1 - fc.v) / 60, ease: 'none', onUpdate: show, id: 'fc2' });
+      }
+    };
+    const obs2 = Observer.create({ target: window, type: 'wheel,touch', wheelSpeed: -1, tolerance: 10, preventDefault: true, onUp: () => play2(1), onDown: () => play2(-1) });
+    obs2.disable();
+    ScrollTrigger.create({ trigger: '#sceneA', start: 'bottom bottom', end: 'max', onEnter: () => obs2.enable(), onEnterBack: () => obs2.enable(), onLeaveBack: () => obs2.disable() });
+    addEventListener('keydown', (e) => {
+      if (!obs2.isEnabled || e.altKey || e.ctrlKey || e.metaKey) return;
+      const d = ['ArrowDown', 'PageDown', ' '].includes(e.key) ? 1 : ['ArrowUp', 'PageUp'].includes(e.key) ? -1 : 0;
+      if (!d) return;
+      e.preventDefault(); fresh2 = true; play2(d);
+    });
+    window.__steps2 = { stops2, play2, obs2 };
+  }
+
   /* Мягкое появление обычных глав */
-  $$('section.flat .wrap').forEach(w => gsap.fromTo(w,{opacity:0.001,y:24},{opacity:1,y:0,duration:0.9,ease:'power2.out',scrollTrigger:{trigger:w,start:'top 85%',once:true}}));
+  // у главы автора — без сдвига: в ней липнет портрет (pin считает его место со сдвигом — был прыжок на 24 px)
+  $$('section.flat .wrap').forEach(w => gsap.fromTo(w,{opacity:0.001,y:w.closest('.ride-a')?0:24},{opacity:1,y:0,duration:0.9,ease:'power2.out',scrollTrigger:{trigger:w,start:'top 85%',once:true}}));
 })();
 </script>
 
@@ -503,11 +851,41 @@ footer p{margin:0 0 6px}
      в точках остановки из линий по глубине кадра проявляется готовый кадр с той же камеры.
      Линии и проявление взяты из теста «Из чертежа в дом» (test-iz-chertezha/index.html), переписаны под эту сцену. -->
 <script src="img/frames-data.js"></script>
+<script src="img/frames-clean.js"></script>
+<script src="img/frames-facade.js"></script>
+<script src="img/frames-interior.js"></script>
+<script>   // окружение дома на первом экране (Максим 28.10: «не джунгли — сосновый лес, газон, кустики»): ?bg=1, 2, 3 — варианты, дом тот же;
+  // без ?bg — 5: лес и дорожка из 1, газон и круглые кусты из 3 (выбор Максима); ?bg=0 — прежний кадр
+  { const b = new URLSearchParams(location.search).get('bg') || '5';
+    if (['1', '2', '3', '5'].includes(b)) document.write('<script src="img/a1-bg-' + b + '.js"><\/script>'); }
+</script>
+<script>   // отделка гостиной (вторая ступень A3): ?o=17, 6, 7, 16, 2 — варианты по доске референсов refs/otdelka; ?o=2.1…2.9 — доработка 2
+  // 27.10: Максим выбрал 2; 2.1–2.9 — его доработка (свет тише, белый потолок, цвета стен и пола)
+  // 27.10 вечером: «другие интерьеры: 1, 2 более правильный, без подсветки, 10, 17 — прям по референсу» → 1, 10 новые, 2 и 17 переделаны
+  // (прежние 2 и 17 — в бэкапе pered-interery-1-2-10-17). Максим: «интерьеры пока оставим 10 и 17» — без ?o — 10
+  { const o = new URLSearchParams(location.search).get('o'); window.FINISH_KEY = ['1', '2', '10', '17', '6', '7', '16', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9'].includes(o) ? o : '10';
+    document.write('<script src="img/finish-' + window.FINISH_KEY + '.js"><\/script>'); }
+  // мебель (третья ступень A3, Максим 27.10 выбрал референсы 7, 9, 13, 18 с доски refs/mebel): к отделке 17 — ?m=7, 9, 13,
+  // к 10 — ?m=9, 13, 18; без ?m — первая. В кадре мебели и терраса со столом и тремя стульями в заднем окне.
+  // Максим 27.10: оставляем мебель 9 на обеих отделках (без ?m — 9) и в ней доп. интерьер: стеллаж с книгами справа, картины слева, торшер
+  { const sets = { 17: ['9', '7', '13'], 10: ['9', '13', '18'] }, l = sets[window.FINISH_KEY] || [], m = new URLSearchParams(location.search).get('m');
+    window.FURN_KEY = l.includes(m) ? m : l[0] || null;
+    if (window.FURN_KEY) document.write('<script src="img/furn-' + window.FINISH_KEY + '-' + window.FURN_KEY + '.js"><\/script>'); }
+</script>
 <script type="module">
 (async () => {
 const qs = new URLSearchParams(location.search);
 const FORCE_P = qs.has('p') ? parseFloat(qs.get('p')) : null;   // служебно: кадр по прогрессу без прокрутки
+const ROOF_FADE = (qs.get("rf") || "0.11,0.17").split(',').map(Number);   // кровля уходит на подъёме к плану: доли подъёма (служебно ?rf=a,b)
 const LINES_ONLY = qs.has('lines');                               // служебно: без фото, для сверки линий с кадрами
+const A3W = ((F) => F['a3w' + qs.get('i')] ? 'a3w' + qs.get('i') : F.a3w ? 'a3w' : F.a3w1 ? 'a3w1' : null)(window.FRAMES || {});   // тёплый контур; ?i=1 и ?i=3 — варианты бетона на выбор заказчика (2 Максим отклонил)
+const A3W_NAMES = { a3w1: 'гладкие заводские панели', a3w3: 'архитектурный бетон' };
+if (qs.has('i') && A3W_NAMES[A3W]) document.title = 'бетон ' + A3W.slice(3) + ' · ' + A3W_NAMES[A3W] + ' · ' + document.title;
+const A3O = (window.FRAMES || {}).a3o ? 'a3o' : 'a3f';   // отделка: кадр варианта ?o (img/finish-N.js), без него — старый кадр
+if (qs.has('o') && A3O === 'a3o') document.title = 'отделка ' + window.FINISH_KEY + ' · ' + document.title;
+const A3M = (window.FRAMES || {}).a3m ? 'a3m' : null;   // мебель: кадр img/furn-О-М.js и маска «стоящих» частей a3mk
+if (A3M) document.title = 'мебель ' + window.FURN_KEY + ' · ' + document.title;
+if (['1', '2', '3', '0'].includes(qs.get('bg'))) document.title = 'фон ' + qs.get('bg') + ' · ' + document.title;   // вариант окружения первого экрана — первым в названии вкладки
 const canvas = document.getElementById('aCanvas');
 const fbEl = document.getElementById('aFallback');
 const SA = window.SA, A = window.__A;
@@ -516,18 +894,20 @@ if (!window.gsap || !A) return;
 // Без WebGL: последовательность кадров с растворением, тот же порядок
 function fallback() {
   canvas.hidden = true; fbEl.hidden = false;
-  const im = ['a2', 'a2', 'a3c', 'a3f', 'a4'].map((k, i) => {
+  const fk = 'fa' + (['1', '2', '3'].includes(qs.get('f')) ? qs.get('f') : '3'), hasFa = !!(window.FRAMES || {})[fk];   // A2: фасад с другой стороны
+  const im = ['a2', hasFa ? fk : 'a2', hasFa && A3W ? A3W : 'a3c', A3O, A3M || A3O].map((k, i) => {
     const el = document.createElement('img'); el.src = (window.FRAMES || {})[k] || ''; el.alt = '';
     if (i) el.style.opacity = '0'; if (k === 'a4') el.style.cssText += 'object-fit:contain;background:var(--bg)';
-    if (i === 1) el.style.cssText += 'transform:scale(1.55);transform-origin:50% 58%';   // A2: тот же кадр с наездом
+    if (i === 1 && !hasFa) el.style.cssText += 'transform:scale(1.55);transform-origin:50% 58%';   // без кадров фасада: тот же кадр с наездом
     fbEl.appendChild(el); return el;
   });
   gsap.timeline({ scrollTrigger: { trigger: '#sceneA', start: 'top top', end: 'bottom bottom', scrub: 0.6 } })
-    .to(im[0], { opacity: 0, duration: 0.07 }, SA.a1dis0)
-    .to(im[1], { opacity: 1, duration: 0.07 }, SA.a2rev0).to(im[1], { opacity: 0, duration: 0.06 }, SA.a2dis0)
-    .to(im[2], { opacity: 1, duration: 0.06 }, SA.a3c0).to(im[3], { opacity: 1, duration: 0.06 }, SA.a3f0)
-    .to([im[2], im[3]], { opacity: 0, duration: 0.05 }, SA.a3dis0)
-    .to(im[4], { opacity: 1, duration: 0.035 }, SA.a4rev0);
+    .to(im[0], { opacity: 0, duration: SA.a1dis1 - SA.a1dis0, ease: window.EZV.fx }, SA.a1dis0)
+    .to(im[1], { opacity: 1, duration: SA.a2rev1 - SA.a2rev0, ease: window.EZV.fx }, SA.a2rev0).to(im[1], { opacity: 0, duration: SA.a2dis1 - SA.a2dis0, ease: window.EZV.fx }, SA.a2dis0)
+    .to(im[2], { opacity: 1, duration: SA.a3c1 - SA.a3c0, ease: window.EZV.fx }, SA.a3c0)
+    .to(im[3], { opacity: 1, duration: SA.a3f1 - SA.a3f0, ease: window.EZV.fx }, SA.a3f0)
+    .to(im[4], { opacity: 1, duration: SA.a3m1 - SA.a3m0, ease: window.EZV.fx }, SA.a3m0)
+    .to([im[2], im[3], im[4]], { opacity: 0, duration: SA.a3dis1 - SA.a3dis0, ease: window.EZV.fx }, SA.a3dis0);   // плана-картинки больше нет: план — линии и размеры
 }
 let THREE;
 try {
@@ -546,6 +926,9 @@ const seg = (t, a, b) => clamp01((t - a) / (b - a));
 const sstep = (x) => x * x * (3 - 2 * x);
 const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const lerp = (a, b, t) => a + (b - a) * t;
+const eq = (t) => t < 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);   // квадратичный in-out, как в блоке «Этапы и сроки»
+// изинги частей сцены A (window.EZV, первый скрипт): без ?e — синус in-out; камера (облёт, влёт, подъём) и кадры отдельно
+const ezCam = gsap.parseEase(window.EZV.cam), ezFx = gsap.parseEase(window.EZV.fx);
 const rad = THREE.MathUtils.degToRad, deg = THREE.MathUtils.radToDeg;
 const COL = { paper: 0xF3F1EC, ink: 0x2A2C30, dim: 0xB9B5AD, acc: 0x6B7A40 };
 const MOB = window.innerWidth < 900;
@@ -621,7 +1004,9 @@ class Solid {
         if (dot > 0.9999 || dot < -0.9999) continue;
         const t0 = Math.max(E[i].t0, E[j].t0), t1 = Math.min(E[i].t1, E[j].t1); if (t1 - t0 < 2e-4) continue;
         const a = [ln.o[0] + ln.d[0] * t0, ln.o[1] + ln.d[1] * t0, ln.o[2] + ln.d[2] * t0], b = [ln.o[0] + ln.d[0] * t1, ln.o[1] + ln.d[1] * t1, ln.o[2] + ln.d[2] * t1];
-        const s = [...a, ...b, ...fa.n, ...fb.n, 0];
+        // рёбра проёмов помечены 0.25: шейдер рисует контур окна и двери целиком, с откосами, снаружи и изнутри
+        // (Максим 27.10: «окну и двери не хватает линий»; в гостиной откосы окон ему понравились)
+        const s = [...a, ...b, ...fa.n, ...fb.n, fa.h || fb.h ? 0.25 : 0];
         out.push(s); if (holeOut && (fa.h || fb.h)) holeOut.push(s);
       }
     }
@@ -635,9 +1020,67 @@ function boxSolid(x0, x1, y0, y1, z0, z1) {
   S.quad([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0]); S.quad([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0]);
   return S;
 }
+// объединение коробок в одно тело (кровля): сетка по всем границам, грани только снаружи объединения.
+// Щели до 2,5 см между кусками закрываются (границы ближе tol сводятся в одну), стыки и нахлёсты кусков линий не дают —
+// линия остаётся только на настоящем ребре (Максим 27.10: край кровли «должен просто ровно идти»)
+function snapAxis(vals, tol) {
+  const s = [...vals].sort((a, b) => a - b), map = new Map(); let grp = [s[0]];
+  const flush = () => { const m = grp.reduce((a, b) => a + b, 0) / grp.length; for (const v of grp) map.set(v, m); };
+  for (let i = 1; i < s.length; i++) { if (s[i] - s[i - 1] <= tol) grp.push(s[i]); else { flush(); grp = [s[i]]; } }
+  flush(); return map;
+}
+function unionSolid(boxes, tol = 0.025) {
+  const K = [['x0', 'x1'], ['y0', 'y1'], ['z0', 'z1']];
+  const snap = K.map(([a, b]) => snapAxis(boxes.flatMap((x) => [x[a], x[b]]), tol));
+  const B = boxes.map((x) => K.map(([a, b], k) => [snap[k].get(x[a]), snap[k].get(x[b])]));
+  const C = [0, 1, 2].map((k) => [...new Set(B.flatMap((x) => x[k]))].sort((a, b) => a - b));
+  const n = C.map((c) => c.length - 1), occ = new Uint8Array(n[0] * n[1] * n[2]);
+  const id = (i, j, k) => (i * n[1] + j) * n[2] + k;
+  const at = (i, j, k) => i >= 0 && j >= 0 && k >= 0 && i < n[0] && j < n[1] && k < n[2] && occ[id(i, j, k)] === 1;
+  for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) {
+    const c = [(C[0][i] + C[0][i + 1]) / 2, (C[1][j] + C[1][j + 1]) / 2, (C[2][k] + C[2][k + 1]) / 2];
+    if (B.some((x) => x.every(([a, b], q) => c[q] > a && c[q] < b))) occ[id(i, j, k)] = 1;
+  }
+  const S = new Solid();
+  for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) {
+    if (!at(i, j, k)) continue;
+    const x0 = C[0][i], x1 = C[0][i + 1], y0 = C[1][j], y1 = C[1][j + 1], z0 = C[2][k], z1 = C[2][k + 1];
+    if (!at(i, j, k + 1)) S.quad([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1]);
+    if (!at(i, j, k - 1)) S.quad([[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0]], [0, 0, -1]);
+    if (!at(i, j + 1, k)) S.quad([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], [0, 1, 0]);
+    if (!at(i, j - 1, k)) S.quad([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0]);
+    if (!at(i - 1, j, k)) S.quad([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0]);
+    if (!at(i + 1, j, k)) S.quad([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0]);
+  }
+  return S;
+}
+// грани объединения разбиты сеткой, поэтому одно ребро приходит кусками: соседние куски одной линии сливаются в один отрезок
+function mergeSegs(segs) {
+  const groups = new Map();
+  for (const s of segs) {
+    let d = [s[3] - s[0], s[4] - s[1], s[5] - s[2]]; const L = Math.hypot(...d); if (L < 1e-6) continue; d = d.map((v) => v / L);
+    const lead = Math.abs(d[0]) > 1e-6 ? d[0] : Math.abs(d[1]) > 1e-6 ? d[1] : d[2]; if (lead < 0) d = d.map((v) => -v);
+    const ta = s[0] * d[0] + s[1] * d[1] + s[2] * d[2], tb = s[3] * d[0] + s[4] * d[1] + s[5] * d[2];
+    const o = [s[0] - d[0] * ta, s[1] - d[1] * ta, s[2] - d[2] * ta];
+    const nk = [s.slice(6, 9), s.slice(9, 12)].map((v) => v.map((x) => Math.round(x * 1000)).join(',')).sort().join('/');
+    const key = d.map((v) => Math.round(v * 1000)).join(',') + '|' + o.map((v) => Math.round(v * 2000)).join(',') + '|' + nk + '|' + s[12];
+    if (!groups.has(key)) groups.set(key, { d, o, e: [] });
+    groups.get(key).e.push({ t0: Math.min(ta, tb), t1: Math.max(ta, tb), s });
+  }
+  const out = [];
+  for (const { d, o, e } of groups.values()) {
+    e.sort((a, b) => a.t0 - b.t0);
+    let cur = { ...e[0] };
+    const emit = (c) => out.push([o[0] + d[0] * c.t0, o[1] + d[1] * c.t0, o[2] + d[2] * c.t0, o[0] + d[0] * c.t1, o[1] + d[1] * c.t1, o[2] + d[2] * c.t1, ...c.s.slice(6)]);
+    for (let i = 1; i < e.length; i++) { if (e[i].t0 <= cur.t1 + 1e-4) cur.t1 = Math.max(cur.t1, e[i].t1); else { emit(cur); cur = { ...e[i] }; } }
+    emit(cur);
+  }
+  return out;
+}
 // стена с проёмами насквозь. thin: 'z' стена вдоль x, 'x' стена вдоль z. wo: координата наружной грани по тонкой оси.
 // holes: {u0,u1,v0,v1 снаружи; U0,U1,V0,V1 изнутри; ns выемка в начале, ne выемка в конце}
-function wallSolid(b, thin, wo, holes) {
+// cover: {ns|ne: [v0, v1]} — торец закрыт соседней панелью на этой высоте (стык в одной плоскости): его не строим, линии стыка нет
+function wallSolid(b, thin, wo, holes, cover = {}) {
   const S = new Solid();
   const u0 = thin === 'z' ? b.x0 : b.z0, u1 = thin === 'z' ? b.x1 : b.z1, v0 = b.y0, v1 = b.y1;
   const wA = thin === 'z' ? b.z0 : b.x0, wB = thin === 'z' ? b.z1 : b.x1, wi = Math.abs(wo - wA) < 1e-6 ? wB : wA;
@@ -653,6 +1096,7 @@ function wallSolid(b, thin, wo, holes) {
   S.quad([P(u0, v0, wl), P(u1, v0, wl), P(u1, v0, wh), P(u0, v0, wh)], [0, -1, 0]);
   for (const [u, nsgn, key] of [[u0, -1, 'ns'], [u1, 1, 'ne']]) {
     const rects = holes.filter((h) => h[key]).map((h) => [h.v0, h.v1, wl - 1, wh + 1]);
+    if (cover[key]) rects.push([cover[key][0], cover[key][1], wl - 1, wh + 1]);
     for (const [c0, c1, w0, w1] of cells(v0, v1, wl, wh, rects)) S.quad([P(u, c0, w0), P(u, c1, w0), P(u, c1, w1), P(u, c0, w1)], U.map((v) => v * nsgn));
   }
   for (const h of holes) {
@@ -665,13 +1109,34 @@ function wallSolid(b, thin, wo, holes) {
 }
 // json → оси теста
 const cv = (b) => ({ x0: b[0] + OFF_X, x1: b[1] + OFF_X, y0: b[4], y1: b[5], z0: -b[3] - OFF_Z, z1: -b[2] - OFF_Z });
-function wallFromJson(ref, b, hl) {
+function wallBox(ref, b) {
   const bx = cv(b); const thin = b[1] - b[0] < 0.2 ? 'x' : 'z';
-  const inw = INWARD[ref]; let wo;
+  const inw = INWARD[ref]; let wo, dir = 1;
   if (inw) {
-    if (thin === 'x') { if (inw[0] > 0) { wo = bx.x0; bx.x1 = bx.x0 + PANEL; } else { wo = bx.x1; bx.x0 = bx.x1 - PANEL; } }
-    else { const dz = -inw[1]; if (dz > 0) { wo = bx.z0; bx.z1 = bx.z0 + PANEL; } else { wo = bx.z1; bx.z0 = bx.z1 - PANEL; } }
+    if (thin === 'x') { if (inw[0] > 0) { wo = bx.x0; bx.x1 = bx.x0 + PANEL; } else { wo = bx.x1; bx.x0 = bx.x1 - PANEL; dir = -1; } }
+    else { const dz = -inw[1]; if (dz > 0) { wo = bx.z0; bx.z1 = bx.z0 + PANEL; } else { wo = bx.z1; bx.z0 = bx.z1 - PANEL; dir = -1; } }
   } else wo = thin === 'x' ? bx.x0 : bx.z0;
+  if (Math.abs(bx.y1 - 2.87) < 0.005) bx.y1 = 2.8;   // стены низкой части встают под плиту (её низ теперь 2,8): линия стены и свеса чёткая, как на фото
+  return { bx, thin, wo, dir };
+}
+// стыки наружных панелей в одной плоскости (щель 2 см): на фото стена сплошная. Щель закрывается пополам, торцы на стыке
+// не строятся, короткая панель встаёт в плоскость длинной (у ExL-34 и ExL-38 наружные грани расходились на 2 см)
+const WJ = {};
+{ const W = ELS.filter(([k, , b]) => k === 'w' && b[4] < 0).map(([, ref, b]) => ({ ref, ...wallBox(ref, b) }));
+  const U = (w, e) => (w.thin === 'z' ? w.bx[e ? 'x1' : 'x0'] : w.bx[e ? 'z1' : 'z0']);
+  for (const A of W) for (const B of W) {
+    if (A === B || A.thin !== B.thin || Math.abs(A.wo - B.wo) > 0.025) continue;
+    const gap = U(B, 0) - U(A, 1); if (gap < -0.001 || gap > 0.03) continue;
+    const u = (U(A, 1) + U(B, 0)) / 2, v = [Math.max(A.bx.y0, B.bx.y0), Math.min(A.bx.y1, B.bx.y1)];
+    (WJ[A.ref] ||= {}).ne = { u, v }; (WJ[B.ref] ||= {}).ns = { u, v };
+    const [S, L] = U(A, 1) - U(A, 0) < U(B, 1) - U(B, 0) ? [A, B] : [B, A]; WJ[S.ref].wo = L.wo;
+  } }
+function wallFromJson(ref, b, hl) {
+  const w = wallBox(ref, b), { bx, thin, dir } = w; let wo = w.wo;
+  const J = WJ[ref] || {}, cover = {};
+  if (J.wo != null) { wo = J.wo; const [a, c] = thin === 'x' ? ['x0', 'x1'] : ['z0', 'z1']; if (dir > 0) { bx[a] = wo; bx[c] = wo + PANEL; } else { bx[c] = wo; bx[a] = wo - PANEL; } }
+  if (J.ns) { bx[thin === 'z' ? 'x0' : 'z0'] = J.ns.u; cover.ns = J.ns.v; }
+  if (J.ne) { bx[thin === 'z' ? 'x1' : 'z1'] = J.ne.u; cover.ne = J.ne.v; }
   const bu0 = thin === 'z' ? bx.x0 : bx.z0, bu1 = thin === 'z' ? bx.x1 : bx.z1;
   // проёмы: по u вдоль стены, по v высота; одинаковые с двух граней слоя сводятся в один
   const raw = (hl || []).concat(NOTCH[ref] || []).map((h) => (thin === 'z' ? { u0: h[0] + OFF_X, u1: h[1] + OFF_X, v0: h[4], v1: h[5] } : { u0: -h[3] - OFF_Z, u1: -h[2] - OFF_Z, v0: h[4], v1: h[5] }));
@@ -684,26 +1149,97 @@ function wallFromJson(ref, b, hl) {
     h.ns = h.u0 <= bu0 + 0.012; h.ne = h.u1 >= bu1 - 0.012;
     if (h.ns) h.u0 = bu0; if (h.ne) h.u1 = bu1;
     const notch = h.ns || h.ne;
-    h.U0 = notch ? h.u0 : h.u0 - EXP; h.U1 = notch ? h.u1 : h.u1 + EXP; h.V0 = h.v0; h.V1 = notch ? h.v1 : h.v1 + EXP;
+    const exp = notch || WIN3D[ref] ? 0 : EXP;   // у проёмов фасада откос прямой: в нём стоит рама
+    h.U0 = h.u0 - exp; h.U1 = h.u1 + exp; h.V0 = h.v0; h.V1 = h.v1 + exp;
   }
-  return wallSolid(bx, thin, wo, holes);
+  return wallSolid(bx, thin, wo, holes, cover);
 }
 
 // Группы: дом (стены, перегородки, полы), кровля (плиты, парапеты, полосы), фундамент, обстановка
-const G = { house: { tris: [], segs: [] }, roof: { tris: [], segs: [] }, found: { tris: [], segs: [] }, furn: { tris: [], segs: [] } };
+const G = { house: { tris: [], segs: [] }, roof: { tris: [], segs: [] }, roofx: { tris: [], segs: [] }, found: { tris: [], segs: [] }, furn: { tris: [], segs: [] }, parts: { tris: [], segs: [] } };
 const ACC = { roof: [], win: [], floor: [] };
-for (const [kind, ref, b, hl] of ELS) {
+// фасад с другой стороны (A2, Максим 27.10): северная стена глухая с двумя небольшими окнами не в пол, на западной дверь.
+// Эти стены видны только в A2; спереди, внутри и на плане сверху их проёмов не видно.
+// Проёмы как на кадре фасада fa3 (Максим 27.10: «окна и двери не соответствуют дому, сделай их более 3D-шными»), размеры сняты
+// с кадра через камеру A2. Оси теста: u вдоль стены, v высота; mull — импосты [u0, u1], sill — отлив под окном,
+// inset — на сколько рама утоплена от лица стены (на кадре у окон глубокий откос, дверь почти вровень со стеной)
+const WIN3D = {
+  'ExL-31': { u: [0.86, 2.86], v: [1.2, 1.97], mull: [[1.56, 1.66]], sill: true, inset: 0.15 },
+  'ExL-37': { u: [6.12, 7.92], v: [1.2, 1.97], mull: [[6.84, 6.94]], sill: true, inset: 0.15 },
+  'ExL-39': { u: [-9.14, -7.0], v: [0, 2.7], mull: [[-8.43, -8.33], [-7.67, -7.53]], inset: 0.04 },   // двустворчатая дверь и узкая стеклянная вставка
+};
+// проёмы в осях json: по грани на каждую сторону слоя, как в IFC
+const HL_A2 = { 'ExL-30': [] };
+for (const [ref, o] of Object.entries(WIN3D)) {
+  const b = ELS.find((e) => e[1] === ref)[2];
+  HL_A2[ref] = b[1] - b[0] < 0.2 ? [b[0], b[1]].map((x) => [x, x, -o.u[1] - OFF_Z, -o.u[0] - OFF_Z, o.v[0], o.v[1]])
+    : [b[2], b[3]].map((y) => [o.u[0] - OFF_X, o.u[1] - OFF_X, y, y, o.v[0], o.v[1]]);
+}
+// низкая плита (F-1-2) в IFC заходит под высокую на 0,9 м внутрь гостиной (до x 9,44): в кадре гостиной потолок ровный,
+// а край плиты давал лишние линии в левом верхнем углу. Внутри высокой части (между её северной и южной стенами) плита
+// обрезана по левой стене гостиной; снаружи (свесы на севере и юге) она прежняя
+// На юге (у входа) плита в IFC торчит на 0,4 м за торец парапета (до x 9,44): в чертеже это кривой «козырёк», на фото его нет —
+// обрезана по парапету InL-140 (x 9,03)
+// Низ плиты опущен до низа парапетов (2,8): свес снизу ровный, как на фото, без второй линии в 10 см от края
+const SPLIT = { 'Concrete_F-1-2': (c) => [{ ...c, y0: 2.8, z1: -10.16 }, { ...c, y0: 2.8, z0: -10.16, z1: -1.15, x1: 8.4 }, { ...c, y0: 2.8, z0: -1.15, x1: 9.03 }] };
+// у высокой кровли то же только на свесах снаружи стен (юг, восток, север): потолок гостиной остаётся на 3,4
+const SOFFIT = [{ x0: 5.77, x1: 15.16, y0: 3.3, y1: 3.4, z0: -1.15, z1: -0.34 }, { x0: 5.77, x1: 15.16, y0: 3.3, y1: 3.4, z0: -10.97, z1: -10.16 },
+  { x0: 14.35, x1: 15.16, y0: 3.3, y1: 3.4, z0: -10.16, z1: -1.15 }];
+// угловой кусок парапета высокой кровли в IFC ниже остальных (до 3,62): на фото край кровли сплошной, по верху парапета
+const ROOF_FIX = { 'Concrete_НС-101-2': { y1: 4.2 } };
+const ROOF_BOXES = [...SOFFIT], ROOF_HIGH = [];
+for (const [kind, ref, b, hl0] of ELS) {
+  const hl = HL_A2[ref] || hl0;
   let S, g;
-  if (kind === 'w' && b[4] < 0) { S = wallFromJson(ref, b, hl); g = G.house; }
-  else { const c = cv(b); S = boxSolid(c.x0, c.x1, c.y0, c.y1, c.z0, c.z1); g = kind === 'i' ? G.house : kind === 'f' ? G.found : G.roof; }
-  S.tris(g.tris);
   const holeSegs = [];
+  if (SPLIT[ref]) { ROOF_BOXES.push(...SPLIT[ref](cv(b))); continue; }
+  if (kind === 'w' && b[4] < 0) { S = wallFromJson(ref, b, hl); g = G.house; }
+  else if (kind === 'i' || kind === 'f') { const c = cv(b); S = boxSolid(c.x0, c.x1, c.y0, c.y1, c.z0, c.z1); g = kind === 'i' ? G.house : G.found; }
+  else { const c = Object.assign(cv(b), ROOF_FIX[ref]); ROOF_BOXES.push(c); if (kind !== 's' && b[4] >= 3.29) ROOF_HIGH.push(c); continue; }
+  S.tris(g.tris);
   S.lines(g.segs, holeSegs);
   if (ref === 'ExL-43' || ref === 'ExL-38') for (const s of holeSegs) if (s[1] > 0.85 && s[1] < 2.2 && s[4] > 0.85 && s[4] < 2.2) ACC.win.push(s);   // только угловое окно (0,9…2,155 м)
-  if (kind === 'p' && b[4] >= 3.29) { const t = []; S.lines(t); ACC.roof.push(...t); }   // парапеты высокой кровли: её край снаружи виден по ним, плита внутри них спрятана
 }
-for (const [x0, x1, z0, z1, h] of PARTS) { const S = boxSolid(x0, x1, 0, h, z0, z1); S.tris(G.house.tris); S.lines(G.house.segs); }
+// кровля (плиты, парапеты, куски углов) — одно тело: край идёт ровно, без стыков панелей и щелей.
+// Акцент края высокой кровли — её парапеты отдельным телом: край снаружи виден по ним, плита внутри них спрятана
+// Вертикальные рёбра тела кровли помечены как рёбра проёмов (0.25): шейдер прячет вертикальные складки, а угол свеса
+// у цельного тела — складка двух видимых граней; у кусков он раньше проходил стыком
+const inkVert = (segs) => segs.map((s) => (Math.abs(s[4] - s[1]) > 0.9 * Math.hypot(s[3] - s[0], s[4] - s[1], s[5] - s[2]) ? [...s.slice(0, 12), 0.25] : s));
+{ const S = unionSolid(ROOF_BOXES), t = []; S.tris(G.roof.tris); S.lines(t); G.roof.segs.push(...inkVert(mergeSegs(t)));
+  const h = []; unionSolid(ROOF_HIGH).lines(h); ACC.roof.push(...inkVert(mergeSegs(h))); }
+// Кровля фасада A2 (Максим 28.10: «полная крыша, когда переходим в проект, становится обрубленной»): на кадре fa3 консоль навеса
+// на юго-западном углу длиннее модели на 3,7 м (замер проекцией на камеру фасада), и при уходе в линии её конец пропадал.
+// Та же кровля с продолжением консоли — отдельной группой roofx: видна на облёте и фасаде (вместо roof), на первом экране
+// и в гостиной кровля прежняя
+const ROOF_EXT = { x0: -1.14, x1: 3.99, y0: 2.8, y1: 3.7, z0: 1.0, z1: 4.84 };
+{ const S = unionSolid([...ROOF_BOXES, ROOF_EXT]), t = []; S.tris(G.roofx.tris); S.lines(t); G.roofx.segs.push(...inkVert(mergeSegs(t))); }
+// начинка проёмов фасада: рама в глубине проёма (профиль 6 × 7 см), импосты, стекло посередине рамы
+// (комнаты за ним не видно, как на кадре), отлив под окном. Одно тело на проём, без стыков; рёбра чернилами, как у проёмов
+for (const [ref, o] of Object.entries(WIN3D)) {
+  const w = wallBox(ref, ELS.find((e) => e[1] === ref)[2]), wo = WJ[ref]?.wo ?? w.wo, d = w.dir;
+  const [u0, u1] = o.u, [v0, v1] = o.v, fw = 0.06, a = wo + d * o.inset, c = a + d * 0.07, g = a + d * 0.035;
+  const box = (uA, uB, vA, vB, wA, wB) => { const w0 = Math.min(wA, wB), w1 = Math.max(wA, wB);
+    return w.thin === 'z' ? { x0: uA, x1: uB, y0: vA, y1: vB, z0: w0, z1: w1 } : { x0: w0, x1: w1, y0: vA, y1: vB, z0: uA, z1: uB }; };
+  const B = [box(u0, u1, v1 - fw, v1, a, c), box(u0, u1, v0, v0 + fw, a, c), box(u0, u0 + fw, v0, v1, a, c), box(u1 - fw, u1, v0, v1, a, c),
+    ...o.mull.map(([m0, m1]) => box(m0, m1, v0, v1, a, c)), box(u0, u1, v0, v1, g - 0.005, g + 0.005)];
+  if (o.sill) B.push(box(u0 - 0.05, u1 + 0.05, v0 - 0.04, v0, wo - d * 0.06, a));
+  const S = unionSolid(B, 0.004), t = []; S.tris(G.house.tris); S.lines(t);
+  G.house.segs.push(...mergeSegs(t).map((s) => [...s.slice(0, 12), 0.25]));
+}
+// перегородки отдельно: в тёплом контуре (внутри дома, A3) их ещё нет, видны только бетонные ВС.
+// Левая стена гостиной (x 8,4…8,52) остаётся всегда: в кадре гостиной она есть, без неё за углом видно коридор
+for (const [x0, x1, z0, z1, h] of PARTS) { const g = x0 >= 8.4 ? G.house : G.parts; const S = boxSolid(x0, x1, 0, h, z0, z1); S.tris(g.tris); S.lines(g.segs); }
 for (const [x0, x1, y0, y1, z0, z1] of FLOORS) { const S = boxSolid(x0, x1, y0, y1, z0, z1); S.tris(G.house.tris); S.lines(G.house.segs); }
+// углы гостиной: правая и задняя стены — разные панели, угол между ними не ребро ни одной из них, линия сама не рисуется.
+// Задаются явно чернилами чуть перед гранями (иначе прячутся за ними): правый угол, низ правой стены (k = 2 — линия всегда).
+// Между левой стеной гостиной (до x 8,52) и задней стеной (с x 8,67) в модели щель 15 см: заполнена, угол как на фото
+{ const R = { x1: 13.975, z0: -9.805, z1: -1.5, h: 3.37, f: 0.012 }, k = 2, n = [0, 1, 0, 0, 1, 0];
+  G.house.segs.push([R.x1, R.f, R.z0, R.x1, R.h, R.z0, ...n, k], [R.x1, R.f, R.z0, R.x1, R.f, R.z1, ...n, k]);
+  // ближний угол торца левой стены (x 8,52, z −5,27): обе грани видны, складку шейдер прячет, а на фото угол есть (Максим 27.10)
+  G.house.segs.push([8.525, R.f, -5.265, 8.525, 3.395, -5.265, ...n, k]);
+  const S = boxSolid(8.52, 8.67, -0.15, 3.37, -10.16, -9.81); S.tris(G.house.tris); S.lines(G.house.segs);
+  // торец задней стены (x 8,67) теперь закрыт вставкой: его вертикальная линия на внутренней грани лишняя
+  G.house.segs = G.house.segs.filter((s) => !(Math.abs(s[0] - 8.67) < 0.01 && Math.abs(s[3] - 8.67) < 0.01 && Math.abs(s[2] + 9.81) < 0.01 && Math.abs(s[5] + 9.81) < 0.01)); }
 for (const [x0, x1, y0, y1, z0, z1] of FURN) { const S = boxSolid(x0, x1, y0, y1, z0, z1); S.tris(G.furn.tris); S.lines(G.furn.segs); }
 { const f = FLOORS[0], y = 0.012, k = 2; ACC.floor.push([f[0], y, f[4], f[1], y, f[4], 0, 1, 0, 0, 1, 0, k], [f[1], y, f[4], f[1], y, f[5], 0, 1, 0, 0, 1, 0, k], [f[1], y, f[5], f[0], y, f[5], 0, 1, 0, 0, 1, 0, k], [f[0], y, f[5], f[0], y, f[4], 0, 1, 0, 0, 1, 0, k]); }
 
@@ -717,7 +1253,11 @@ renderer.toneMapping = THREE.NoToneMapping;
 renderer.setClearColor(COL.paper, 1);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 2000);
-const U = { uRes: { value: new THREE.Vector2(1, 1) } };
+const U = { uRes: { value: new THREE.Vector2(1, 1) },
+  // первый экран: линии модели только в силуэте дома на фото (Максим 28.10: «контур снизу у угла крыши — непонятная херня»):
+  // под свесом и за торцом модель шире фото. uClip — сила обрезки (1 на первом экране, гаснет к старту облёта), uClipM — маска
+  // дома a2m, uClipK/uClipC — переход экран → кадр, как у фото (uK, uC)
+  uClip: { value: 0 }, uClipM: { value: null }, uClipK: { value: new THREE.Vector2(1, 1) }, uClipC: { value: new THREE.Vector2(0.5, 0.5) } };
 const LINE_VS = `
 attribute vec3 aA; attribute vec3 aB; attribute vec3 aN1; attribute vec3 aN2; attribute float aK;
 uniform vec2 uRes; uniform float uWInk; uniform float uWDim; uniform float uWAcc; uniform float uAccent;
@@ -730,7 +1270,8 @@ void main() {
     vec3 m = 0.5 * (a.xyz + b.xyz);
     float f1 = dot(normalize(normalMatrix * aN1), -m);
     float f2 = dot(normalize(normalMatrix * aN2), -m);
-    if (f1 > 0.0 && f2 > 0.0) {
+    if (aK > 0.1) { kind = f1 > 0.0 || f2 > 0.0 ? 2.0 : 0.0; }   // ребро проёма: контур окна и двери целиком, чернилами
+    else if (f1 > 0.0 && f2 > 0.0) {
       vec3 dw = normalize(mat3(modelMatrix) * (aB - aA));
       kind = abs(dw.y) > 0.9 ? 0.0 : 1.0;
     } else if (f1 > 0.0 || f2 > 0.0) { kind = 2.0; }
@@ -753,6 +1294,7 @@ void main() {
 }`;
 const LINE_FS = `
 uniform vec3 uInk; uniform vec3 uDim; uniform vec3 uAcc; uniform float uAccent; uniform float uAlpha;
+uniform vec2 uRes; uniform float uClip; uniform sampler2D uClipM; uniform vec2 uClipK; uniform vec2 uClipC;
 varying float vKind; varying float vSide; varying float vWid;
 void main() {
   float px = abs(vSide) * vWid * 0.5;
@@ -760,6 +1302,11 @@ void main() {
   float aa = 1.0 - smoothstep(core - 0.6, core + 0.5, px);
   vec3 col = vKind > 1.5 ? mix(uInk, uAcc, uAccent) : mix(uDim, uAcc, uAccent);
   float a = aa * uAlpha;
+  if (uClip > 0.001) {   // вне силуэта дома на фото (с запасом в пару пикселей по мип-уровню) — гасить
+    vec2 tc = (gl_FragCoord.xy / uRes - uClipC) * uClipK + 0.5;
+    float hm = (tc.x < 0.0 || tc.x > 1.0 || tc.y < 0.0 || tc.y > 1.0) ? 0.0 : texture2D(uClipM, tc, 1.0).r;
+    a *= 1.0 - uClip * (1.0 - smoothstep(0.1, 0.4, hm));
+  }
   if (a < 0.004) discard;
   gl_FragColor = vec4(col, a);
 }`;
@@ -770,7 +1317,7 @@ const lineMats = [];
 function lineMaterial(o = {}) {
   const w = [o.wInk || 1.1, o.wDim || 0.75, o.wAcc || 1.9];
   const m = new THREE.ShaderMaterial({
-    uniforms: { uRes: U.uRes, uWInk: { value: w[0] * DPR }, uWDim: { value: w[1] * DPR }, uWAcc: { value: w[2] * DPR },
+    uniforms: { uRes: U.uRes, uClip: U.uClip, uClipM: U.uClipM, uClipK: U.uClipK, uClipC: U.uClipC, uWInk: { value: w[0] * DPR }, uWDim: { value: w[1] * DPR }, uWAcc: { value: w[2] * DPR },
       uInk: { value: sv(COL.ink) }, uDim: { value: sv(COL.dim) }, uAcc: { value: sv(COL.acc) }, uAccent: { value: o.accent || 0 }, uAlpha: { value: 1 } },
     vertexShader: LINE_VS, fragmentShader: LINE_FS, transparent: true, depthWrite: false, depthTest: true, side: THREE.DoubleSide,
   });
@@ -810,15 +1357,40 @@ const D_TOP = 400;
 const PLAN = { w: 1819, h: 1287, pxm: 57.7, x0: 249, y0: 201 };            // чертёж: пикселей на метр, левая наружная грань, верхняя наружная грань
 const plan = { cx: -0.35 + (PLAN.w / 2 - PLAN.x0) / PLAN.pxm, cz: -14.65 + (PLAN.h / 2 - PLAN.y0) / PLAN.pxm, hh: PLAN.h / 2 / PLAN.pxm };
 const M_POS = V3(12.1, 1.15, -4.0), M_LOOK = V3(12.1, 1.15, -9.81);
+// камера гостиной после влёта в угловое окно (Максим 27.10): тот же ракурс на большое окно, но сразу за южной стеной, по оси окна,
+// угол шире (96° по горизонтали в кадре 16:9) — в кадре около 85 % комнаты
+const M2_POS = V3(11.65, 1.35, -1.62), M2_LOOK = V3(11.65, 1.3, -9.81), M2_FV = 2 * Math.atan(Math.tan(rad(48)) / (16 / 9));
 // A1 и A2 на одной точке камеры: «кадр 5» MIR, объектив 50 мм на кадре 36 мм, 2000 × 1333, сдвиг кадра 0,024 вправо и 0,078 вверх
 // (final/camera.json). A2 это наезд с той же точки: угол сужен в ZOOM раз (50 мм → 32 мм), кадр тот же, вырезан вокруг точки ZC
 const ZOOM = 1.55, ZC = [0.5, 0.58];
 const FV5 = 2 * Math.atan(666.5 / 2777.8), PP5 = [0.476, 0.617];
+// A2 (Максим 27.10): камера не наезжает, а облетает дом на другую сторону, там проявляется новый фасад (img/frames-facade.js).
+// Варианты ?f=1 … 3: ракурс и фасад; dir — куда облетать (−1 через восток, +1 через запад), co — где выноски на экране
+const FACADES = {
+  // 3 (выбран 27.10, варианты 1–2 сняты): поворот через запад, камера ближе к углу дома, дом в кадре в 1,55 раза крупнее
+  // (как наезд в исходном аниматике). Фасад: обожжённое дерево, бетонный край кровли, дубовый потолок свеса
+  3: { name: 'сзади слева, вечер', pos: [-11.0, 1.4, -29.2], look: [3.2, 1.75, -7.2], near: 10, wall: 45, dir: 1, tex: 'fa3',
+    co: [[63, 16], [73, 70], [6, 38]],
+    // на кадре свес кровли справа длиннее модели: этот кусок проявляется вместе с домом (доли кадра, v снизу)
+    houseAdd: [[0.8652, 0.6266], [0.9189, 0.6149], [0.9189, 0.5666], [0.8652, 0.5754]] },
+};
+const FC = FACADES[qs.get('f')] ? qs.get('f') : '3', FCD = FACADES[FC];
+const HAS_FA = !!(window.FRAMES || {})[FCD.tex];
+if (qs.has('f')) document.title = FC + ' · ' + FCD.name + ' · ' + document.title;
+document.querySelectorAll('#co .co').forEach((el, i) => { el.style.left = FCD.co[i][0] + '%'; el.style.top = FCD.co[i][1] + '%'; });
 const S = {
-  a1: { pos: V3(7.01, 1.2, 29.8), look: V3(7.01, 1.2, -10), up: V3(0, 1, 0), fv: FV5, FA: 2000 / 1333, pp: PP5, fit: 'cover', near: 24, wall: 60, tex: ['a2'] },
-  a2: { pos: V3(7.01, 1.2, 29.8), look: V3(7.01, 1.2, -10), up: V3(0, 1, 0), fv: 2 * Math.atan(Math.tan(FV5 / 2) / ZOOM), FA: 2000 / 1333,
-    pp: [0.5 + ZOOM * (PP5[0] - ZC[0]), 0.5 + ZOOM * (PP5[1] - ZC[1])], fit: 'cover', near: 24, wall: 60, tex: ['a2'], zoom: ZOOM, zc: ZC },
-  a3: { pos: M_POS, look: M_LOOK, up: V3(0, 1, 0), fv: 2 * Math.atan(Math.tan(rad(42)) / (16 / 9)), FA: 16 / 9, pp: [0.5, 0.56], fit: 'cover', near: 3.3, wall: 9.0, tex: ['a3c', 'a3f'] },
+  a1: { pos: V3(7.01, 1.2, 29.8), look: V3(7.01, 1.2, -10), up: V3(0, 1, 0), fv: FV5, FA: 2000 / 1333, pp: PP5, fit: 'cover', near: 24, wall: 60,
+    tex: (window.FRAMES || {}).a2d ? ['a2', 'a2c', 'a2m', 'a2d'] : ['a2'] },   // img/frames-clean.js: a2c кадр без дерева на доме, a2m маска дома, a2d карта фронта от дома
+  a2: HAS_FA
+    ? { pos: V3(...FCD.pos), look: V3(...FCD.look), up: V3(0, 1, 0), fv: rad(27), FA: 1.5, pp: [0.5, 0.5], fit: 'cover', near: FCD.near, wall: FCD.wall, tex: [FCD.tex], houseFirst: true, houseAdd: FCD.houseAdd, rtw: MOB ? 1024 : 2048 }
+    : { pos: V3(7.01, 1.2, 29.8), look: V3(7.01, 1.2, -10), up: V3(0, 1, 0), fv: 2 * Math.atan(Math.tan(FV5 / 2) / ZOOM), FA: 2000 / 1333,
+      pp: [0.5 + ZOOM * (PP5[0] - ZC[0]), 0.5 + ZOOM * (PP5[1] - ZC[1])], fit: 'cover', near: 24, wall: 60, tex: ['a2'], zoom: ZOOM, zc: ZC },   // без кадров фасада: прежний наезд
+  // A3: первая ступень — тёплый контур (a3w: голые панели, пол и потолок, окно, без мебели и перегородок, img/frames-interior.js), потом отделка
+  a3: HAS_FA
+    ? { pos: M2_POS, look: M2_LOOK, up: V3(0, 1, 0), fv: M2_FV, FA: 16 / 9, pp: [0.5, 0.5], fit: 'cover', near: 2.0, wall: 10.5,
+      tex: [A3W || 'a3c', A3O], layered: true, furn: A3M, furnMask: A3M && 'a3mk', furnOrd: A3M && (window.FRAMES || {}).a3mo ? 'a3mo' : null,
+      furnLines: A3M && (window.FRAMES || {}).a3ml ? 'a3ml' : null, furnOrdD: A3M && (window.FRAMES || {}).a3md ? 'a3md' : null, furnRug: A3M && (window.FRAMES || {}).a3mr ? 'a3mr' : null, furnGrow: A3M && (window.FRAMES || {}).a3mg ? 'a3mg' : null }   // чертёж мебели: R — тушь, G — силуэт (бумага)   // слои по глубине модели (по плоскостям), radial: true — прежний «из центра»; furn — третий слой
+    : { pos: M_POS, look: M_LOOK, up: V3(0, 1, 0), fv: 2 * Math.atan(Math.tan(rad(42)) / (16 / 9)), FA: 16 / 9, pp: [0.5, 0.56], fit: 'cover', near: 3.3, wall: 9.0, tex: ['a3c', 'a3f'] },
   a4: { pos: V3(plan.cx, D_TOP, plan.cz), look: V3(plan.cx, 0, plan.cz), up: V3(0, 0, -1), fv: 2 * Math.atan(plan.hh / D_TOP), FA: PLAN.w / PLAN.h, pp: [0.5, 0.5], fit: 'rect', fw: PLAN.w, fh: PLAN.h, near: D_TOP - 7, wall: D_TOP + 1, tex: ['a4'] },
 };
 let W = 1, H = 1;
@@ -834,28 +1406,71 @@ function fitStop(s) {
   s.sx = s.cx + (s.pp[0] - 0.5) / s.kx; s.sy = s.cy + (s.pp[1] - 0.5) / s.ky;
 }
 // путь A2 → M: от «кадра 5» вправо к угловому окну, сквозь него в гостиную
-const path2 = new THREE.CatmullRomCurve3([S.a2.pos.clone(), V3(10.3, 1.4, 15.0), V3(12.55, 1.55, 3.0), V3(12.6, 1.5, -1.3), M_POS.clone()], false, 'centripetal');
-const look2 = new THREE.CatmullRomCurve3([S.a2.look.clone(), V3(11.4, 1.35, -9.0), V3(12.6, 1.5, -9.6), V3(12.4, 1.3, -9.8), M_LOOK.clone()], false, 'centripetal');
+const path2 = new THREE.CatmullRomCurve3([(HAS_FA ? V3(10.3, 1.4, 21.0) : S.a2.pos).clone(), V3(10.3, 1.4, 15.0), V3(12.55, 1.55, 3.0), V3(12.6, 1.5, -1.3), M_POS.clone()], false, 'centripetal');
+const look2 = new THREE.CatmullRomCurve3([(HAS_FA ? V3(7.01, 1.3, -10) : S.a2.look).clone(), V3(11.4, 1.35, -9.0), V3(12.6, 1.5, -9.6), V3(12.4, 1.3, -9.8), M_LOOK.clone()], false, 'centripetal');
+// облёт вокруг дома: угол, радиус и высота камеры вокруг середины дома, точка взгляда своя
+const ORB_C = V3(7.0, 0, -7.2);
+const polar = (p) => ({ a: Math.atan2(p.z - ORB_C.z, p.x - ORB_C.x), r: Math.hypot(p.x - ORB_C.x, p.z - ORB_C.z), y: p.y });
+// путь A2 → гостиная (Максим 27.10): с фасада облёт обратно через запад к фронту, сужаясь по спирали, плавный поворот налево,
+// подлёт с юга к угловому окну А (южная грань x 10,95…14,25, высота 0,9…2,155), сквозь него и остановка сразу за стеной.
+// Один путь, один изинг на весь ход; взгляд сначала на дом, на подлёте уходит на большое окно гостиной
+const WIN_O = V3(11.64, 1.6, 7.07);   // конец спирали: юг, 15 м от середины дома, движение на восток с поворотом к окну
+const pathW = (() => {
+  const a = polar(S.a2.pos), b = polar(WIN_O); let d = b.a - a.a; while (d > 0) d -= 2 * Math.PI;   // угол убывает: через запад и юг
+  const pts = [];
+  for (let i = 0; i < 9; i++) { const u = i / 9, r = lerp(a.r, b.r, u * u * (3 - 2 * u)), an = a.a + d * u;
+    pts.push(V3(ORB_C.x + r * Math.cos(an), lerp(S.a2.pos.y, WIN_O.y, u), ORB_C.z + r * Math.sin(an))); }
+  pts.push(WIN_O.clone(), V3(12.9, 1.55, 3.4), V3(12.35, 1.45, -0.3), V3(12.0, 1.4, -1.25), M2_POS.clone());
+  return new THREE.CatmullRomCurve3(pts, false, 'centripetal');
+})();
+const K_WIN = (() => { let best = 0, bd = 1e9; for (let i = 0; i <= 400; i++) { const d = pathW.getPointAt(i / 400).distanceTo(WIN_O); if (d < bd) { bd = d; best = i / 400; } } return best; })();
+const HOUSE_C = V3(7.0, 1.6, -7.2);
+function windowPose(k) {   // k 0…1 по длине пути
+  cam.pos.copy(pathW.getPointAt(k));
+  cam.look.lerpVectors(S.a2.look, HOUSE_C, sstep(seg(k, 0, 0.18)));
+  cam.look.lerp(M2_LOOK, sstep(seg(k, K_WIN - 0.12, 0.97)));
+  cam.up.set(0, 1, 0);
+  // угол: на облёте шире кадра фасада (дом ближе, чем на первом облёте, и должен входить целиком), на подлёте к окну — угол гостиной
+  const s = sstep(seg(k, K_WIN - 0.08, 1));
+  cam.fov = lerp(lerp(S.a2.fov, ORB_FOV, sstep(seg(k, 0, 0.3))), S.a3.fov, s); cam.sx = lerp(S.a2.sx, S.a3.sx, s); cam.sy = lerp(S.a2.sy, S.a3.sy, s);
+}
+const ORB_FOV = 40;
+function orbit(pa, pb, dir, u, out) {   // dir −1: угол убывает (через восток), +1: растёт (через запад)
+  const A = polar(pa), B = polar(pb); let d = B.a - A.a;
+  if (dir < 0) { while (d > 0) d -= 2 * Math.PI; } else { while (d < 0) d += 2 * Math.PI; }
+  const a = A.a + d * u, r = lerp(A.r, B.r, u);
+  return out.set(ORB_C.x + r * Math.cos(a), lerp(A.y, B.y, u), ORB_C.z + r * Math.sin(a));
+}
 const cam = { pos: V3(0, 0, 0), look: V3(0, 0, 0), up: V3(0, 1, 0), fov: 40, sx: 0.5, sy: 0.5 };
 function setFrom(s) { cam.pos.copy(s.pos); cam.look.copy(s.look); cam.up.copy(s.up); cam.fov = s.fov; cam.sx = s.sx; cam.sy = s.sy; }
 function mix2(a, b, u) { cam.pos.lerpVectors(a.pos, b.pos, u); cam.look.lerpVectors(a.look, b.look, u); cam.up.lerpVectors(a.up, b.up, u).normalize(); cam.fov = lerp(a.fov, b.fov, u); cam.sx = lerp(a.sx, b.sx, u); cam.sy = lerp(a.sy, b.sy, u); }
 function poseAt(p) {
   if (p <= SA.tr1a) setFrom(S.a1);
-  else if (p < SA.tr1b) mix2(S.a1, S.a2, easeInOut(seg(p, SA.tr1a, SA.tr1b)));
+  else if (p < SA.tr1b) {
+    const u = ezCam(seg(p, SA.tr1a, SA.tr1b));
+    if (!HAS_FA) mix2(S.a1, S.a2, u);
+    else {   // дом чертежом облетает камера на другую сторону, взгляд всё время на доме
+      mix2(S.a1, S.a2, u); orbit(S.a1.pos, S.a2.pos, FCD.dir, u, cam.pos);
+    }
+  }
   else if (p <= SA.tr2a) setFrom(S.a2);
   else if (p < SA.tr2b) {
-    const u = easeInOut(seg(p, SA.tr2a, SA.tr2b));
-    cam.pos.copy(path2.getPointAt(u)); cam.look.copy(look2.getPointAt(u)); cam.up.set(0, 1, 0);
-    const s = sstep(u); cam.fov = lerp(S.a2.fov, S.a3.fov, s); cam.sx = lerp(S.a2.sx, S.a3.sx, s); cam.sy = lerp(S.a2.sy, S.a3.sy, s);
+    const u = HAS_FA ? ezCam(seg(p, SA.tr2a, SA.tr2b)) : easeInOut(seg(p, SA.tr2a, SA.tr2b));
+    if (HAS_FA) windowPose(u);   // с фасада облёт и влёт в угловое окно
+    else {
+      cam.pos.copy(path2.getPointAt(u)); cam.look.copy(look2.getPointAt(u)); cam.up.set(0, 1, 0);
+      const s = sstep(u); cam.fov = lerp(S.a2.fov, S.a3.fov, s); cam.sx = lerp(S.a2.sx, S.a3.sx, s); cam.sy = lerp(S.a2.sy, S.a3.sy, s);
+    }
   }
   else if (p <= SA.tr3a) setFrom(S.a3);
   else if (p < SA.tr3b) {
     // подъём строго вверх: сначала наклон вниз сквозь кровлю, потом высота растёт, а угол сужается так,
     // чтобы видимая полоса земли росла плавно и дом на экране только уменьшался, без рывков
-    const u = seg(p, SA.tr3a, SA.tr3b), s = sstep(u);
-    const h = lerp(M_POS.y, D_TOP, Math.pow(u, 2.4));
-    cam.pos.set(lerp(M_POS.x, S.a4.pos.x, s), h, lerp(M_POS.z, S.a4.pos.z, s));
-    cam.look.lerpVectors(M_LOOK, S.a4.look, sstep(seg(u, 0, 0.55)));
+    const u = HAS_FA ? ezCam(seg(p, SA.tr3a, SA.tr3b)) : seg(p, SA.tr3a, SA.tr3b), s = sstep(u);
+    const P0 = S.a3.pos, L0 = S.a3.look;
+    const h = lerp(P0.y, D_TOP, Math.pow(u, 2.4));
+    cam.pos.set(lerp(P0.x, S.a4.pos.x, s), h, lerp(P0.z, S.a4.pos.z, s));
+    cam.look.lerpVectors(L0, S.a4.look, sstep(seg(u, 0, 0.55)));
     cam.up.set(0, 1, 0).lerp(S.a4.up, sstep(seg(u, 0.05, 0.45))).normalize();
     const visTop = 2 * D_TOP * Math.tan(rad(S.a4.fov) / 2);
     const vis = lerp(20, visTop, sstep(seg(u, 0.25, 1)));
@@ -872,6 +1487,22 @@ function poseAt(p) {
 // один раз в текстуру, шум кадра один раз; край как у акварели
 // ------------------------------------------------------------------
 const PH_F0 = -0.38, PH_F1 = 1.3;
+// кадр A1: фон уходит от дома к краям экрана (Максим 27.10). Фронт идёт по карте a2d: доля площади кадра ближе к дому,
+// поэтому убранная площадь растёт ровно по изингу. w — ширина полосы, где идёт превращение. Варианты ?v=1 … 3:
+// 1 фокус уходит: фон расплывается и светлеет в бумагу; 2 полутон: фон рассыпается в точки, точки тают;
+// 3 карандаш: фон становится наброском и стирается (потом и дом уходит в линии);
+// 4 как в исходном аниматике (reveal: акварельные пятна, зерно, вуаль), только порядок не по глубине, а от дома к краям
+const EFX = {
+  1: { name: 'фокус', amp: 0.05, w: 0.26 },
+  2: { name: 'полутон', amp: 0.04, w: 0.22 },
+  3: { name: 'карандаш', amp: 0.05, w: 0.32 },
+  // 4: порядок reveal() = 1 − w·(доля площади от дома); w < 1, чтобы пятна (±0.17), как в оригинале, раскрывались островами впереди фронта.
+  // Всё видно при 1.22 (пятно до +0.17 и полоса крапинок 0.05; при 1.12 у ствола в покое уже была дыра), всё ушло около 1 − w − 0.2
+  4: { name: 'как в оригинале', amp: 0, w: 0.25, from: 1.22, to: 0.55 },
+};
+const EV = EFX[qs.get('v')] ? qs.get('v') : '4', EF = EFX[EV];
+if (EF.from === undefined) { EF.from = -EF.amp; EF.to = 1 + EF.w + EF.amp; }
+if (qs.has('v')) document.title = EV + ' · ' + EF.name + ' · ' + document.title;
 const RTW = MOB ? 640 : 1024;
 const orderMat = new THREE.ShaderMaterial({
   uniforms: { uO: { value: V3(0, 0, 0) }, uNear: { value: 1 }, uWall: { value: 2 } },
@@ -906,24 +1537,54 @@ const noiseMat = new THREE.ShaderMaterial({
 });
 const noiseRT = new THREE.WebGLRenderTarget(RTW, Math.round(RTW * 9 / 16), { depthBuffer: false });
 const photoU = {
-  uA: { value: null }, uB: { value: null }, uOrd: { value: null }, uNoi: { value: noiseRT.texture },
+  uA: { value: null }, uB: { value: null }, uOrd: { value: null }, uOrd2: { value: null }, uNoi: { value: noiseRT.texture },
+  uF: { value: null }, uOrd3: { value: null }, uP3: { value: -9 },   // третий слой гостиной — мебель, свой порядок (глубина пола у основания предметов)
+  uFL: { value: null }, uP3d: { value: -9 }, uInkC: { value: sv(COL.ink) }, uFR: { value: null }, uHasFR: { value: 0 },   // чертёж мебели и его фронт (идёт впереди фото)
+  uOrd3d: { value: null }, uOrd3g: { value: null }, uHasG: { value: 0 },   // порядок чертежа: как uOrd3, но вокруг предметов — их (контур не берёт порядок соседнего ковра)
+  uLayer2Soft: { value: 0 }, uLayer1Soft: { value: 0 },
+  uSpk: { value: 1 },   // крапинки reveal(): дырки за фронтом и островки перед ним (0 — край акварельный, без белых дыр и тёмных точек)
+  // ковёр в чертеже мебели: передний и задний край (доля кадра сверху) и его порядок (начало, ход) — из img/furn-О-М.js
+  uRug: { value: new THREE.Vector4(...((r) => r ? [r.yf, r.yb, r.e0, r.es] : [1, 0.9, 9, 0])(window.FURN_RUG)) },   // гостиная (s.layered): отделка и проявление тёплого контура — мягкой шторкой
   uP1: { value: -9 }, uP2: { value: -9 }, uK: { value: new THREE.Vector2(1, 1) }, uC: { value: new THREE.Vector2(0.5, 0.5) }, uPaper: { value: sv(COL.paper) },
   uZ: { value: 1 }, uZC: { value: new THREE.Vector2(0.5, 0.5) },   // наезд: кадр берётся из вырезки исходного файла
+  uMode: { value: 0 }, uFade: { value: 1 }, uThr: { value: 0.88 }, uSplit: { value: 0 },
+  uEff: { value: +EV }, uAmp: { value: EF.amp }, uW: { value: EF.w }, uD: { value: null },   // A1: эффект ухода фона и карта фронта от дома
+  uPx: { value: new THREE.Vector2(1 / 1920, 1 / 1080) }, uCell: { value: 9 }, uTx: { value: new THREE.Vector2(1.5 / 1920, 1.5 / 1280) },   // шаг пикселя экрана в кадре, ячейка полутона, шаг наброска
+  uFix: { value: new THREE.Vector4(145 / 1920, 1 - 652 / 1280, 275 / 1920, 1 - 552 / 1280) }, uFixE: { value: new THREE.Vector2(15 / 1920, 15 / 1280) },   // A1: левый конец низкого карниза чистый с самого начала (на фото там ветка от левого дерева)
+  uM: { value: null }, uHasM: { value: 0 }, uTF: { value: 0.245 },   // A1: маска дома по фото; окна (у модели сквозные) — на глубине своей стены 0,245 (было 0,37 — окно белело раньше стены)
 };
+// мебель: FURN_SPAN — прежний столбцовый порядок; FURN_AMP — размах неровности края шторки; FURN_FEATHER — ширина растушёвки
+// FURN_DRAW_FEATHER — край фронта чертежа (уже: линии «прорисовываются»); FURN_DRAW_LEAD — доля шага мебели, на которую чертёж впереди фото
+const FURN_SPAN = 0.06, FURN_AMP = 0.015, FURN_FEATHER = 0.05, FURN_DRAW_FEATHER = 0.025, FURN_DRAW_LEAD = window.FURN_LEAD || 0.3, FURN_SOFT = 0.2;   // FURN_SOFT — длина проявления теней и тона (порядок)   // край волны ровный (было 0,05 / 0,08 — клочья)
+// чертёж мебели растёт линиями от точек у низа предметов (Максим 28.10); ?g0 — прежний рост снизу вверх строками
+// точки — только ориентир, откуда растут линии, сами не рисуются (Максим: «жирные чёрные точки не нужны»); ?dots — показать
+const FURN_GROW = qs.has('g0') ? 0 : 1, FURN_GROW_FEATHER = 0.012, FURN_DOTS = qs.has('dots') ? 1 : 0;
+const FURN_PAPER = qs.has('paper') ? 1 : 0;   // белая заливка чертежа мебели: 0 — только тушь (Максим 28.10), ?paper — как было
+const FIN_AMP = 0.05, FIN_FEATHER = 0.045;   // отделка гостиной: неровность края шторки и ширина растушёвки (порядок — глубина модели)
+const soft1Q = false;   // мягкая шторка для тёплого контура выключена (оставлена на пробу)
+const C1_AMP = 0.035, C1_FEATHER = 0.022;   // проявление тёплого контура из бумаги: край чётче (широкая растушёвка читалась серым дымом)
 const photoMat = new THREE.ShaderMaterial({
   uniforms: photoU, transparent: true, depthTest: false, depthWrite: false, vertexShader: FS_VERT,
   fragmentShader: `
-    uniform sampler2D uA; uniform sampler2D uB; uniform sampler2D uOrd; uniform sampler2D uNoi;
+    uniform sampler2D uA; uniform sampler2D uB; uniform sampler2D uOrd; uniform sampler2D uOrd2; uniform sampler2D uNoi;
+    uniform sampler2D uF; uniform sampler2D uOrd3; uniform float uP3; uniform sampler2D uFL; uniform float uP3d; uniform vec3 uInkC; uniform sampler2D uOrd3d; uniform sampler2D uFR; uniform float uHasFR; uniform sampler2D uOrd3g; uniform float uHasG;
+    uniform float uLayer2Soft; uniform float uLayer1Soft; uniform vec4 uRug; uniform float uSpk;
     uniform float uP1; uniform float uP2; uniform vec2 uK; uniform vec2 uC; uniform vec3 uPaper; uniform float uZ; uniform vec2 uZC;
+    uniform float uMode; uniform float uFade; uniform float uThr; uniform vec4 uFix; uniform vec2 uFixE; uniform float uSplit;
+    uniform sampler2D uM; uniform float uHasM; uniform float uTF;
+    uniform float uEff; uniform float uAmp; uniform float uW; uniform sampler2D uD; uniform vec2 uPx; uniform float uCell; uniform vec2 uTx;
     varying vec2 vUv;
+    float lum(vec2 p){ return dot(texture2D(uA, p, 1.5).rgb, vec3(0.299, 0.587, 0.114)); }
+    // A1: насколько фронт от дома прошёл точку кадра p: 0 ещё не дошёл, 1 полоса превращения позади
+    float pass(vec2 p, float n){ vec4 d = texture2D(uD, p); return clamp((uP1 - d.r - d.g / 255.0 + (n - 0.5) * uAmp) / uW, 0.0, 1.0); }
     float reveal(float t, float blot, float amp, float gr, float P, out float veil, out float wash){
       float e = t + (blot - 0.5) * mix(0.05, 0.34, amp);
       float d = P - e;
       float core = smoothstep(-0.004, 0.004, d);
       float ahead = clamp(1.0 + d / 0.05, 0.0, 1.0) * step(d, 0.0);
-      float dots = smoothstep(1.0 - ahead * 0.45, 1.04 - ahead * 0.45, gr);
+      float dots = smoothstep(1.0 - ahead * 0.45, 1.04 - ahead * 0.45, gr) * uSpk;
       float behind = clamp(1.0 - d / 0.03, 0.0, 1.0) * step(0.0, d);
-      float holes = 1.0 - smoothstep(behind * 0.3 - 0.03, behind * 0.3, gr);
+      float holes = (1.0 - smoothstep(behind * 0.3 - 0.03, behind * 0.3, gr)) * uSpk;
       veil = smoothstep(-0.07, -0.008, d);
       wash = smoothstep(-0.035, 0.0, d) * (0.25 + 0.25 * gr);
       return clamp(max(core - holes, dots), 0.0, 1.0);
@@ -933,13 +1594,140 @@ const photoMat = new THREE.ShaderMaterial({
       if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) discard;
       vec4 o = texture2D(uOrd, uv); float t = o.r + o.g / 255.0;
       vec4 nz = texture2D(uNoi, uv);
+      if (uMode > 0.5) {   // A1: фон уходит от дома к краям экрана, дом остаётся цветным; потом дом уходит, как в оригинале
+        vec2 tc = uZC + (uv - 0.5) * uZ;
+        vec3 c = texture2D(uA, tc).rgb;
+        float s = pass(tc, nz.r), sh = s, aBg; vec3 cb;
+        if (uEff < 1.5) {          // 1 фокус: фон расплывается, светлеет и уходит в бумагу
+          cb = mix(texture2D(uA, tc, smoothstep(0.0, 0.7, s) * 6.0).rgb, uPaper, smoothstep(0.3, 1.0, s) * 0.6);
+          aBg = 1.0 - smoothstep(0.55, 1.0, s);
+        } else if (uEff < 2.5) {   // 2 полутон: растр по сетке экрана, тёмное — крупная точка, светлое — мелкая; фронт и тон в центре точки, цвет свой (без мозаики)
+          vec2 cc = (floor(gl_FragCoord.xy / uCell) + 0.5) * uCell, off = (cc - gl_FragCoord.xy) * uPx;
+          float sc = pass(tc + off, texture2D(uNoi, uv + off).r), into = smoothstep(0.0, 0.2, sc);
+          float rad = mix(uCell * 0.72 * (0.3 + 0.75 * (1.0 - lum(tc + off))), -1.0, smoothstep(0.2, 1.0, sc));
+          cb = c;
+          aBg = mix(1.0, 1.0 - smoothstep(rad - 0.8, rad + 0.8, length(gl_FragCoord.xy - cc)), into);
+        } else if (uEff > 3.5) {   // 4 как в оригинале: то же растворение reveal(), порядок — от дома к краям (у дома 1, у краёв 1 − uW)
+          vec4 dq = texture2D(uD, tc); float vb, wb;
+          float mb = reveal(1.0 - uW * (dq.r + dq.g / 255.0), nz.r, nz.b, nz.a, uP1, vb, wb);
+          float ab = max(mb, wb), va = vb * 0.55;
+          aBg = va + ab - va * ab;
+          cb = (uPaper * va * (1.0 - ab) + c * ab) / max(aBg, 1e-4);
+          float vh2, wh2; float mh2 = reveal(1.02, nz.r, 0.0, nz.a, uP1, vh2, wh2);
+          sh = 1.0 - max(mh2, wh2);   // дом переходит на чистый кадр разом, пока уходит ближний к нему фон (пятна мелкие, ветки на кровле не висят)
+        } else {                   // 3 карандаш: контуры фото графитом на бумаге, набросок держится и стирается
+          vec2 e = uTx;
+          float gx = lum(tc + vec2(e.x, -e.y)) + 2.0 * lum(tc + vec2(e.x, 0.0)) + lum(tc + e) - lum(tc - e) - 2.0 * lum(tc - vec2(e.x, 0.0)) - lum(tc + vec2(-e.x, e.y));
+          float gy = lum(tc + vec2(-e.x, e.y)) + 2.0 * lum(tc + vec2(0.0, e.y)) + lum(tc + e) - lum(tc - e) - 2.0 * lum(tc - vec2(0.0, e.y)) - lum(tc + vec2(e.x, -e.y));
+          float ink = clamp(length(vec2(gx, gy)) * 2.0 - 0.16, 0.0, 1.0) * (0.7 + 0.3 * nz.a);
+          cb = mix(c, mix(uPaper, vec3(0.32, 0.32, 0.33), ink), smoothstep(0.0, 0.35, s));
+          aBg = 1.0 - smoothstep(0.65, 1.0, s);
+        }
+        aBg *= uFade;
+        // дом по маске фото (a2m: прямые сглаженные края, окно закрыто); без неё по глубине модели
+        float hm = uHasM > 0.5 ? texture2D(uM, tc).r : 1.0 - smoothstep(uThr - 0.02, uThr + 0.02, t);
+        float tH = t < uThr ? t : uTF;   // окно и щели, сквозные у модели: глубина как у окна
+        float veilH, washH;
+        float mH = reveal(tH, nz.r, nz.b, nz.a, uP2, veilH, washH);   // дом: прежнее растворение по глубине
+        float aH = max(mH, washH), vH = veilH * 0.55, AH = vH + aH - vH * aH;
+        vec2 fl = smoothstep(uFix.xy, uFix.xy + uFixE, tc) * (1.0 - smoothstep(uFix.zw - uFixE, uFix.zw, tc));
+        vec3 ch = mix(texture2D(uB, tc).rgb, c, (1.0 - smoothstep(0.0, 0.6, sh)) * uFade * (1.0 - fl.x * fl.y));   // дом: фронт выходит от дома, ствол и кусты на нём сразу сменяются чистым кадром
+        float bg = 1.0 - hm;   // 0 дом, 1 фон
+        float wH = hm * AH, wB = bg * aBg, A = wH + wB;   // на сглаженном краю дом и фон складываются по своим долям, без каймы листвы
+        if (A < 0.002) discard;
+        gl_FragColor = vec4(((uPaper * vH * (1.0 - aH) + ch * aH) / max(AH, 1e-4) * wH + cb * wB) / A, A);
+        return;
+      }
       float veil1, wash1, veil2, wash2;
-      float m1 = reveal(t, nz.r, nz.b, nz.a, uP1, veil1, wash1);
+      // uSplit: фасад — у дома (порядок < 0,5) свой фронт uP1, у окружения свой uP2; фазы идут внахлёст, второго слоя нет
+      float m1;
+      if (uLayer1Soft > 0.5) {   // гостиная, проявление тёплого контура: мягкая шторка по глубине, без вуали и крапинок
+        m1 = smoothstep(-${C1_FEATHER.toFixed(3)}, 0.0, uP1 - (t + (nz.r - 0.5) * ${C1_AMP.toFixed(3)})); veil1 = 0.0; wash1 = 0.0;
+      } else {
+        // фасад: на границе дома и окружения порядок в текстуре смешивается (между полосой дома 0,02…0,26 и окружения 0,74…0,98),
+        // и эта линия оставалась белой, пока дом проявлялся или уходил (Максим 28.10: «белые черточки по краю дорожки», «пятна по домам»).
+        // Точки шва — к ближайшей полосе своей стороны
+        // Точки шва — плавно между фронтами дома и окружения (ширина шва ~ одна точка карты): край без лесенки
+        if (uSplit > 0.5) {
+          float vH, wH, vB, wB;
+          float mH = reveal(min(t, 0.26), nz.r, nz.b, nz.a, uP1, vH, wH), mB = reveal(max(t, 0.74), nz.r, nz.b, nz.a, uP2, vB, wB);
+          float w = smoothstep(0.3, 0.7, t);
+          m1 = mix(mH, mB, w); veil1 = mix(vH, vB, w); wash1 = mix(wH, wB, w);
+        } else m1 = reveal(t, nz.r, nz.b, nz.a, uP1, veil1, wash1);
+      }
       if (m1 < 0.002 && veil1 < 0.002) discard;
       vec2 uvT = uZC + (uv - 0.5) * uZ;
       vec3 c = texture2D(uA, uvT).rgb;
-      float m2 = reveal(t, nz.g, nz.b, fract(nz.a * 7.31), uP2, veil2, wash2);
+      // второй слой (отделка поверх тёплого контура) — по глубине модели, как в исходном аниматике; первый тоже (s.layered), со своими пятнами
+      vec4 o2 = texture2D(uOrd2, uv);
+      float m2 = 0.0; wash2 = 0.0;
+      if (uSplit < 0.5) {
+        if (uLayer2Soft > 0.5) {
+          // гостиная (Максим 28.10: «комната почти дорисовалась, остался угол, у окна снизу пятна недорисованные и в финале
+          // проявляются; слева тоже плавнее»): отделка — мягкая шторка по глубине модели, как мебель, без крапинок и дырок
+          // reveal() (они давали серую рябь бетона в последних уголках); неровность края — свои пятна, небольшая
+          float e2 = o2.r + o2.g / 255.0 + (nz.g - 0.5) * ${FIN_AMP.toFixed(3)};
+          m2 = smoothstep(-${FIN_FEATHER.toFixed(3)}, 0.0, uP2 - e2);
+        } else m2 = reveal(o2.r + o2.g / 255.0, nz.g, nz.b, fract(nz.a * 7.31), uP2, veil2, wash2);
+      }
       if (m2 > 0.002 || wash2 > 0.002) c = mix(c, texture2D(uB, uvT).rgb, max(m2, wash2));
+      // третий слой (мебель поверх отделки) — свой порядок (предмет целиком от места, где стоит, снизу вверх) и мягкая шторка:
+      // из прозрачности в полный цвет на полосе FURN_FEATHER порядка, без крапинок и дырок reveal() (Максим 27.10: «ровно,
+      // постепенно прорисовывались»); лёгкая неровность края — свои пятна, обратные пятнам отделки
+      // Чертёж мебели (Максим 27.10: «мебель сначала собирается из белого чертежа с чёрными линиями, как дом, снизу от пола,
+      // и снизу её тут же заполняет настоящая картинка»): фронт uP3d идёт впереди фото по тому же порядку — в силуэте предметов
+      // бумага с тушью, за ним фронт uP3 заливает фото
+      if (uP3 > -5.0 || uP3d > -5.0) {
+        vec4 o3 = texture2D(uOrd3, uv);
+        float e3 = o3.r + o3.g / 255.0 + ((1.0 - nz.g) - 0.5) * ${FURN_AMP.toFixed(3)};
+        vec4 fl = texture2D(uFL, uvT);
+        // порядок чертежа — своей картой (Максим 28.10: контур кресла пунктиром вставал раньше кресла — на краю предмета грубая
+        // карта порядка смешивала его с ковром); фото на чертеже — тем же порядком, вне чертежа — прежним
+        vec4 o3d = texture2D(uOrd3d, uv);
+        float e3d = o3d.r + o3d.g / 255.0 + ((1.0 - nz.g) - 0.5) * ${FURN_AMP.toFixed(3)};
+        // Слои (Максим 28.10: «белое только внутри чёрного контура, как у стеллажа, торшера, картин»): 1) бумага ковра; 2) фото —
+        // каждая точка своим порядком (ковёр вокруг мебели — строкой ковра, вплотную к линиям); 3) чертёж предмета ПОВЕРХ фото, пока
+        // не пришло фото самого предмета. Раньше чертёж лежал под фото, и там, где фото ждало предмет, белела бумага ковра — кайма
+        // и многоугольники вокруг стула, пня, стола, дивана
+        float d3 = smoothstep(-${FURN_DRAW_FEATHER.toFixed(3)}, 0.0, uP3d - e3d);
+        // рост от точек: у низа предмета встают точки, от них по самим линиям бежит тушь (порядок — путь по линии от точки
+        // в окне времени предмета); точка — мягкий кружок туши
+        float dg = 0.0;
+        if (uHasG > 0.5) {
+          vec4 og = texture2D(uOrd3g, uv);
+          float eg = og.r + og.g / 255.0;
+          d3 = smoothstep(-${FURN_GROW_FEATHER.toFixed(3)}, 0.0, uP3d - eg);
+          dg = ${FURN_DOTS.toFixed(1)} * og.b * smoothstep(-0.012, 0.0, uP3d - eg);
+        }
+        // бумага переднего предмета — вместе с тем, что за ним (B карты чертежа — насколько раньше линий): без серого пятна в форме
+        // пня на готовой грани дивана (Максим 28.10)
+        float d3p = smoothstep(-${FURN_DRAW_FEATHER.toFixed(3)}, 0.0, uP3d - (e3d - o3d.b * 0.5));
+        // бумага ковра (B) — целиком, своей строкой от переднего края к заднему, и под мебелью тоже: мебель встаёт на ней
+        float er = uRug.z + uRug.w * clamp((uRug.x - (1.0 - uvT.y)) / max(uRug.x - uRug.y, 1e-3), 0.0, 1.0);
+        // Максим 28.10 вечер: «у мебели белую заливку всю убираем, только чёрные линии; внутри прозрачное, просвечивает то, что
+        // сзади: у стульев пол, на веранде трава, у стеллажа и лампы стена». Бумага ковра и бумага в силуэте предметов больше не
+        // рисуются (FURN_PAPER 0), чертёж — одна тушь поверх того, что уже проявилось
+        float r3 = ${FURN_PAPER.toFixed(1)} * smoothstep(-${FURN_DRAW_FEATHER.toFixed(3)}, 0.0, uP3d - er) * fl.b;
+        if (r3 > 0.002) c = mix(c, uPaper, r3);
+        // тени и тон у мебели (флаг B карты порядка) — не шторкой, а долгим проявлением (Максим 28.10: «тень появляется резко»)
+        float m3 = o3.b > 0.5 ? smoothstep(0.0, ${FURN_SOFT.toFixed(3)}, uP3 - e3) : smoothstep(-${FURN_FEATHER.toFixed(3)}, 0.0, uP3 - e3);
+        // мебель теперь трогается, пока отделка ещё идёт: вне предметов кадр мебели — та же отделка, поэтому там он не обгоняет
+        // отделку, иначе отделка проступала бы вторым фронтом
+        if (o3.b > 0.5) m3 = min(m3, m2);
+        // без белой заливки внутри линий стола, пня, дивана на ковре был бы виден пол отделки — светлое пятно посреди ковра
+        // (ковра под предметами в кадре нет). Там — ковёр, достроенный под предметами (a3mr, rug_plate.py), вместе с ковром вокруг
+        if (uHasFR > 0.5) {
+          float rp = smoothstep(-${FURN_FEATHER.toFixed(3)}, 0.0, uP3 - er) * fl.b * smoothstep(0.3, 0.8, fl.g);
+          if (rp > 0.002) c = mix(c, texture2D(uFR, uvT).rgb, rp);
+        }
+        if (m3 > 0.002) c = mix(c, texture2D(uF, uvT).rgb, m3);
+        // чертёж предмета поверх: бумага строго внутри линии (край жёсткий, размытый мипами край заливки не выходит за тушь),
+        // тушь поверх; уходит, когда до него доходит фото предмета (его порядок — карта чертежа)
+        float mo = smoothstep(-${FURN_FEATHER.toFixed(3)}, 0.0, uP3 - e3d);
+        float pa = ${FURN_PAPER.toFixed(1)} * d3p * smoothstep(0.3, 0.8, fl.g) * (1.0 - mo), ia = max(d3 * fl.r, dg) * (1.0 - mo);
+        if (pa > 0.002) c = mix(c, uPaper, pa);
+        if (ia > 0.002) c = mix(c, uInkC, ia);
+      }
       float a1 = max(m1, wash1), v = veil1 * 0.55, Aa = v + a1 - v * a1;
       gl_FragColor = vec4((uPaper * v * (1.0 - a1) + c * a1) / max(Aa, 1e-4), Aa);
     }`,
@@ -956,12 +1744,12 @@ const state = { p: 0, dirty: true, lastP: -1 };
   for (const k of Object.keys(TEX)) loader.load(TEX[k], (tx) => {
     tx.colorSpace = THREE.NoColorSpace; tx.anisotropy = 4; tx.generateMipmaps = true; tx.minFilter = THREE.LinearMipmapLinearFilter;
     tex[k] = tx;
-    const up = () => { renderer.initTexture(tx); ready[k] = true; state.dirty = true; };   // в видеокарту в простое, чтобы не было длинного кадра
+    const up = () => { renderer.initTexture(tx); ready[k] = true; state.dirty = true; if (AREA) idle(prepArea); };   // в видеокарту в простое, чтобы не было длинного кадра
     if (window.requestIdleCallback) requestIdleCallback(up, { timeout: 1500 }); else setTimeout(up, 60);
   }, undefined, () => console.warn('Сцена A: нет кадра', k));
 }
 function bakeOrder(s) {
-  const rt = new THREE.WebGLRenderTarget(RTW, Math.round(RTW / s.FA), { depthBuffer: true });
+  const rw = s.rtw || RTW, rt = new THREE.WebGLRenderTarget(rw, Math.round(rw / s.FA), { depthBuffer: true });   // s.rtw — своё разрешение карты (фасад: край дома без лесенки)
   const c = new THREE.PerspectiveCamera(deg(s.fv), s.FA, Math.max(0.05, s.near * 0.02), 3000);
   c.position.copy(s.pos); c.up.copy(s.up); c.lookAt(s.look);
   const fw = 1000, fh = 1000 / s.FA; c.setViewOffset(fw, fh, (0.5 - s.pp[0]) * fw, (0.5 - s.pp[1]) * fh, fw, fh);
@@ -972,20 +1760,311 @@ function bakeOrder(s) {
   orderMat.uniforms.uNear.value = s.near; orderMat.uniforms.uWall.value = s.wall;
   const hidden = [];
   scene.traverse((o) => { if (o.isMesh && o.visible && o.material.isShaderMaterial) { hidden.push(o); o.visible = false; } });
-  const rv = groups.roof.grp.visible; if (s === S.a4) groups.roof.grp.visible = false;
-  bakeGround.visible = s !== S.a3;
+  const rv = groups.roof.grp.visible, rxv = groups.roofx.grp.visible; if (s === S.a4) groups.roof.grp.visible = false;
+  groups.roofx.grp.visible = s === S.a2; if (s === S.a2) groups.roof.grp.visible = false;   // консоль навеса — только у фасада
+  const shell = s === S.a3 && HAS_FA; if (shell) { groups.parts.grp.visible = false; groups.furn.grp.visible = false; }   // тёплый контур: без перегородок и мебели
+  bakeGround.visible = s !== S.a3 && s !== S.a1;   // A1: земля уходит вместе с фоном, остаётся только дом
   scene.overrideMaterial = orderMat;
   renderer.setRenderTarget(rt); renderer.setClearColor(0xffffff, 1); renderer.clear(); renderer.render(scene, c);
+  let mask = null;
+  if (s.houseFirst && EZV_AREA) {   // маска дома с этой точки: стены, кровля, рамы; без земли
+    const mrt = new THREE.WebGLRenderTarget(rt.width, rt.height, { depthBuffer: true });
+    bakeGround.visible = false; scene.overrideMaterial = maskMat;
+    renderer.setRenderTarget(mrt); renderer.setClearColor(0x000000, 1); renderer.clear(); renderer.render(scene, c);
+    mask = readRT(mrt); mrt.dispose();
+  }
   renderer.setRenderTarget(null); renderer.setClearColor(COL.paper, 1);
-  scene.overrideMaterial = null; bakeGround.visible = false; groups.roof.grp.visible = rv;
+  scene.overrideMaterial = null; bakeGround.visible = false; groups.roof.grp.visible = rv; groups.roofx.grp.visible = rxv;
+  if (shell) { groups.parts.grp.visible = true; groups.furn.grp.visible = true; }
   hidden.forEach((o) => { o.visible = true; });
-  s.ord = rt.texture;
+  s.ord = rt.texture; s.rt = rt;
+  if (s.layered) fillOrder(s);
+  if (s === S.a1) holeOrder(s);
+  if (EZV_AREA && (s.houseFirst || s.radial)) customOrder(s, mask);
+}
+// Гостиная: окна и проёмы на свою стену (Максим 28.10: «у окна снизу пятна недорисованные, в финале проявляются; слева тоже»).
+// За стеклом у модели пусто — порядок «дальше всего», и вид в окне вставал последним клочками. Здесь пустые точки получают глубину
+// проёма: по столбцу — линейно между ближайшей поверхностью сверху (стена, балка) и снизу (подоконник, пол)
+function fillOrder(s) {
+  const D = readRT(s.rt), w = D.w, h = D.h, t = new Float32Array(w * h), b = new Uint8Array(w * h * 4);
+  for (let k = 0; k < w * h; k++) t[k] = D.b[k * 4] / 255 + D.b[k * 4 + 1] / 65025;
+  const EMP = s === S.a3 ? 0.88 : 0.985, empty = (v) => v > EMP;   // гостиная: дальше задней стены (0,86) — вид в окне, вместе с окном (Максим 30.10: кусок крыши за окном белел и пропадал разом)
+  for (let i = 0; i < w; i++) {
+    let j = 0;
+    while (j < h) {
+      if (!empty(t[j * w + i])) { j++; continue; }
+      let j1 = j; while (j1 < h && empty(t[j1 * w + i])) j1++;
+      const lo = j > 0 ? t[(j - 1) * w + i] : null, hi = j1 < h ? t[j1 * w + i] : null;
+      for (let q = j; q < j1; q++) t[q * w + i] = lo !== null && hi !== null ? lo + (hi - lo) * (q - j + 1) / (j1 - j + 1) : (lo ?? hi ?? 0.9);
+      j = j1;
+    }
+  }
+  for (let k = 0; k < w * h; k++) { const v = Math.min(0.9999, t[k]) * 255; b[k * 4] = Math.floor(v); b[k * 4 + 1] = Math.round((v - Math.floor(v)) * 255); b[k * 4 + 3] = 255; }
+  const tx = new THREE.DataTexture(b, w, h, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tx.minFilter = tx.magFilter = THREE.LinearFilter; tx.needsUpdate = true;
+  s.ord = tx; s.ordFill = tx; s.ordData = { b, w, h };
+}
+// Первый экран: окна и дверь дома (Максим 28.10: «белые пятна по домам»). Сквозь проём модель видит внутренние стены — они дальше
+// фасада, и стёкла белели раньше своей стены. Здесь точки, заметно более далёкие, чем всё вокруг в квадрате HOLE_K (серое
+// «открытие»: минимум, потом максимум), получают глубину окружающей стены
+const HOLE_K = 71;
+function minMax1D(src, dst, n, stride, off, k, isMin) {   // скользящий минимум/максимум окна k по одной строке или столбцу (очередь)
+  const q = new Int32Array(n); let h = 0, t = 0; const r = k >> 1;
+  for (let i = 0; i < n + r; i++) {
+    if (i < n) { const v = src[off + i * stride]; while (t > h && (isMin ? src[off + q[t - 1] * stride] >= v : src[off + q[t - 1] * stride] <= v)) t--; q[t++] = i; }
+    const c = i - r; if (c < 0) continue;
+    while (q[h] < c - r) h++;
+    dst[off + c * stride] = src[off + q[h] * stride];
+  }
+}
+function filt2D(a, w, h, k, isMin) {
+  const b = new Float32Array(a.length), c = new Float32Array(a.length);
+  for (let j = 0; j < h; j++) minMax1D(a, b, w, 1, j * w, k, isMin);
+  for (let i = 0; i < w; i++) minMax1D(b, c, h, w, i, k, isMin);
+  return c;
+}
+function holeOrder(s) {
+  const D = readRT(s.rt), w = D.w, h = D.h, t = new Float32Array(w * h), b = new Uint8Array(w * h * 4);
+  for (let k = 0; k < w * h; k++) t[k] = D.b[k * 4] / 255 + D.b[k * 4 + 1] / 65025;
+  const op = filt2D(filt2D(t, w, h, HOLE_K, true), w, h, HOLE_K, false);
+  for (let k = 0; k < w * h; k++) {
+    const v = Math.min(0.9999, t[k] - op[k] > 0.03 && op[k] < 0.85 ? op[k] : t[k]) * 255;
+    b[k * 4] = Math.floor(v); b[k * 4 + 1] = Math.round((v - Math.floor(v)) * 255); b[k * 4 + 3] = 255;
+  }
+  const tx = new THREE.DataTexture(b, w, h, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tx.minFilter = tx.magFilter = THREE.LinearFilter; tx.needsUpdate = true;
+  s.ord = tx;
+}
+// Свой порядок проявления (Максим 27.10): фасад — сначала весь дом (по глубине, от ближнего к дальнему), потом всё вокруг
+// от дома к краям; гостиная — из центра кадра во все стороны, интерьер и вид в окнах одновременно. Порядок пишется в текстуру
+// вместо глубины (тот же код r + g/255); растворение идёт обратно: окружение от краёв к дому, потом дом; гостиная от краёв к центру
+const EZV_AREA = !!window.EZV.area;
+const maskMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+// доля точек набора со значением меньше v (0…1): по ней площадь растёт ровно
+function rankOf(vals, sel) {
+  let lo = Infinity, hi = -Infinity, n = 0;
+  for (let k = 0; k < vals.length; k++) if (sel(k)) { if (vals[k] < lo) lo = vals[k]; if (vals[k] > hi) hi = vals[k]; }
+  const B = 4096, hist = new Float64Array(B + 1), f = (v) => Math.max(0, Math.min(B, Math.floor((v - lo) / Math.max(1e-9, hi - lo) * B)));
+  for (let k = 0; k < vals.length; k++) if (sel(k)) { hist[f(vals[k])]++; n++; }
+  for (let b = 1; b <= B; b++) hist[b] += hist[b - 1];
+  return (v) => (n ? hist[f(v)] / n : 0);
+}
+function customOrder(s, M) {
+  const D = readRT(s.rt), w = D.w, h = D.h, n = w * h, e = new Float32Array(n);
+  if (s.radial) {
+    const r = new Float32Array(n);
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) r[j * w + i] = Math.hypot(((i + 0.5) / w - 0.5) * s.FA, (j + 0.5) / h - 0.5);
+    const R = rankOf(r, () => true);
+    for (let k = 0; k < n; k++) e[k] = 0.02 + 0.96 * R(r[k]);
+  } else {
+    const house = new Uint8Array(n), td = new Float32Array(n), dist = new Float32Array(n);
+    const inPoly = (u, v, Q) => { let c = false; for (let a = 0, b = Q.length - 1; a < Q.length; b = a++) if ((Q[a][1] > v) !== (Q[b][1] > v) && u < (Q[b][0] - Q[a][0]) * (v - Q[a][1]) / (Q[b][1] - Q[a][1]) + Q[a][0]) c = !c; return c; };
+    for (let k = 0; k < n; k++) {
+      const u = (k % w + 0.5) / w, v = (Math.floor(k / w) + 0.5) / h;
+      house[k] = M.b[k * 4] > 127 || (s.houseAdd && inPoly(u, v, s.houseAdd)) ? 1 : 0;
+      td[k] = D.b[k * 4] / 255 + D.b[k * 4 + 1] / 65025; dist[k] = house[k] ? 0 : 1e9;
+    }
+    // расстояние до дома в пикселях кадра (фаска 1 / 1,41, два прохода)
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const k = j * w + i; let d = dist[k];
+      if (i > 0) d = Math.min(d, dist[k - 1] + 1); if (j > 0) { d = Math.min(d, dist[k - w] + 1); if (i > 0) d = Math.min(d, dist[k - w - 1] + 1.414); if (i < w - 1) d = Math.min(d, dist[k - w + 1] + 1.414); } dist[k] = d; }
+    for (let j = h - 1; j >= 0; j--) for (let i = w - 1; i >= 0; i--) { const k = j * w + i; let d = dist[k];
+      if (i < w - 1) d = Math.min(d, dist[k + 1] + 1); if (j < h - 1) { d = Math.min(d, dist[k + w] + 1); if (i < w - 1) d = Math.min(d, dist[k + w + 1] + 1.414); if (i > 0) d = Math.min(d, dist[k + w - 1] + 1.414); } dist[k] = d; }
+    const H = rankOf(td, (k) => house[k]), G = rankOf(dist, (k) => !house[k]);
+    // дом 0,02…0,26, окружение 0,74…0,98: с пятнами (±0,17) полосы не перекрываются, между ними пустой зазор для стыка фаз
+    for (let k = 0; k < n; k++) e[k] = house[k] ? 0.02 + 0.24 * H(td[k]) : 0.74 + 0.24 * G(dist[k]);
+  }
+  const b = new Uint8Array(n * 4);
+  for (let k = 0; k < n; k++) { const t = Math.min(0.9999, Math.max(0, e[k])) * 255; b[k * 4] = Math.floor(t); b[k * 4 + 1] = Math.round((t - Math.floor(t)) * 255); b[k * 4 + 3] = 255; }
+  const tx = new THREE.DataTexture(b, w, h, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tx.minFilter = tx.magFilter = THREE.LinearFilter; tx.needsUpdate = true;
+  s.ord = tx; s.ordData = { b, w, h }; s.mask = M;
 }
 {
   const q = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), noiseMat); q.frustumCulled = false;
   const qs = new THREE.Scene(); qs.add(q);
   renderer.setRenderTarget(noiseRT); renderer.render(qs, photoCam); renderer.setRenderTarget(null);
 }
+
+// Темп проявлений по заметности (варианты ?e с area, Максим 27.10: «дом в чертёж за полсекунды», «фасад — зюк»).
+// Фронт reveal() идёт по порядку e = глубина + пятна; дом и фасад занимают в нём узкую полосу, поэтому при ровном ходе P
+// видимое изменение проходит за малую долю части. Здесь для каждой остановки берётся распределение e по кадру (в A1 отдельно
+// фон и дом по маске a2m), и P подбирается так, чтобы заметная перемена шла ровно по изингу: доля q → P = квантиль(q).
+// Вес точки — насколько фото в ней отличается от бумаги (тёмный лес заметен, светлое небо почти нет). Точка меняется не разом,
+// а всю полосу фронта: вуаль и крапинки за 0,06 до него, сам фронт, дырки 0,03 позади — полоса считается целиком, иначе
+// дальний лес (у него одна глубина) вспыхивает в конце. Считается заранее, в простое, когда кадр остановки загружен
+const AREA = !!window.EZV.area, NQ = 256, PAPER_L = 0.945, QT = 0.18;   // QT — доля хода проявления с замедлением в конце
+function readRT(rt) { const b = new Uint8Array(rt.width * rt.height * 4); renderer.readRenderTargetPixels(rt, 0, 0, rt.width, rt.height, b); return { b, w: rt.width, h: rt.height }; }
+function quant(v) { v.sort(); const q = new Float32Array(NQ + 1); for (let i = 0; i <= NQ; i++) q[i] = v[Math.round(i / NQ * (v.length - 1))]; return q; }
+function imgData(t, maxW = 512) { const im = t.image, k = Math.min(1, maxW / im.width), c = document.createElement('canvas');
+  c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+  const g = c.getContext('2d'); g.drawImage(im, 0, 0, c.width, c.height); return { d: g.getImageData(0, 0, c.width, c.height).data, w: c.width, h: c.height }; }
+const px = (I, u, v) => (Math.min(I.h - 1, Math.max(0, Math.floor((1 - v) * I.h))) * I.w + Math.min(I.w - 1, Math.max(0, Math.floor(u * I.w)))) * 4;   // картинка: строки сверху вниз
+const at2 = (I, u, v, ch) => I.d[px(I, u, v) + ch] / 255;
+let NZ = null;
+// pick(t, u, v) → порядок без пятен или null (точка не в наборе); ph — кадр остановки для веса заметности.
+// o — для второго слоя (отделка поверх бетона): O порядок, ph0 кадр под ним (вес — отличие от него), ch канал пятен, band полоса перемены
+function revealQ(s, ph, pick, o = {}) {
+  if (!NZ) NZ = readRT(noiseRT);
+  const O = o.O || s.ordData || readRT(s.rt), out = [], ch = o.ch || 0, band = o.band || [-0.06, -0.035, -0.01, 0.015], vis = o.tail ? [] : null;
+  let eMax = 0;
+  const lum = (I, q) => (0.299 * I.d[q] + 0.587 * I.d[q + 1] + 0.114 * I.d[q + 2]) / 255;
+  const zf = s.zoom ? 1 / s.zoom : 1, zx = s.zoom ? s.zc[0] : 0.5, zy = s.zoom ? 1 - s.zc[1] : 0.5;
+  for (let j = 0; j < O.h; j += 2) for (let i = 0; i < O.w; i += 2) {
+    const k = (j * O.w + i) * 4, t = O.b[k] / 255 + O.b[k + 1] / 65025, u = (i + 0.5) / O.w, v = (j + 0.5) / O.h;
+    const e = pick(t, u, v); if (e === null) continue;
+    const n = (Math.min(NZ.h - 1, Math.floor(v * NZ.h)) * NZ.w + Math.min(NZ.w - 1, Math.floor(u * NZ.w))) * 4;
+    const bl = NZ.b[n + ch] / 255, ka = o.amp0 !== undefined ? o.amp0 : 0.05 + 0.29 * NZ.b[n + 2] / 255;   // amp0 — постоянный размах (мебель)
+    const ee = e + ((o.inv ? 1 - bl : bl) - 0.5) * ka;   // inv — пятна мебели (1 − g)
+    const q = px(ph, zx + (u - 0.5) * zf, zy + (v - 0.5) * zf), dL = Math.abs(lum(ph, q) - (o.ph0 ? lum(o.ph0, q) : PAPER_L));
+    // мебель: слабые перемены (тени на стене, просветы стеллажа) — каждая четвёртая точка: темп ведут сами предметы,
+    // но весь диапазон порядка в таблице есть, и в конце ничего не встаёт рывком
+    // ковёр (o.extra): видимая перемена — подложка ковра, её фронт идёт своим порядком (uRug), а не порядком кадра мебели;
+    // заметна фактурой, а не яркостью — время на неё по её порядку, с весом заметной перемены
+    const ex = o.extra ? o.extra(u, v) : null;
+    if (ex !== null) for (let r = 3; r > 0; r--) for (const b of band) out.push(ex + b);
+    if (o.minD && dL < o.minD && (((i >> 1) + (j >> 1)) & 3) !== 0) continue;
+    for (let r = 1 + Math.round(3 * Math.min(1, dL * 1.6)); r > 0; r--) { for (const b of band) out.push(ee + b); if (vis && dL >= o.minD && O.b[k + 2] < 128) vis.push(ee); }
+    if (vis) eMax = Math.max(eMax, ee);
+  }
+  // мебель (o.tail, Максим 30.10: «с 755 по 773 слишком быстро»): за последним видимым предметом в таблице оставался вес стен,
+  // где тон почти не меняется, — на него уходил конец шага, а стеллаж, картины и торшер сжимались в несколько кадров.
+  // Этот вес — ровно по порядку на последнюю долю видимой перемены (1 − o.tail); общий вес тот же, начало шага прежнее.
+  // Мягкое досвечивание стен (FURN_SOFT) — в конце шага: таблица продлевается до top
+  if (vis && vis.length) {
+    vis.sort((a, b) => a - b);
+    const ve = vis[Math.floor((vis.length - 1) * 0.999)] + 0.01, a0 = vis[Math.floor((vis.length - 1) * o.tail)];
+    let n = 0, m = 0; for (const x of out) if (x > ve) n++;
+    for (let i = 0; i < out.length; i++) if (out[i] > ve) out[i] = a0 + (ve - a0) * (m++ + 0.5) / n;
+    const Q = quant(Float32Array.from(out)); Q.top = eMax + FURN_SOFT; return Q;
+  }
+  return out.length ? quant(Float32Array.from(out)) : null;
+}
+// доля заметной перемены q → фронт P. Концы таблицы продлены на вуаль впереди (0,08) и дырки позади (0,06) — на 1,5 % хода
+// каждый: дальше перемен нет. Ровно в 0 и 1 — значения остановки (hi: фото целиком, lo: целиком чертёж), скачок там невидим
+// top — куда фронт доходит в конце хода (у мебели — досвечивание стен), за долю e1 хода (у мебели короче)
+function qP(Q, q, hi = Q[NQ] + 0.06, top = Q[NQ] + 0.06, e1 = 0.015) {
+  const lo = Q[0] - 0.08, E = 0.015;
+  if (q <= 0) return lo; if (q >= 1) return hi;
+  // хвост проявления с замедлением: последние QT доли хода — квадратичный ease-out. Доля площади в секунду всюду ровная,
+  // но последний одинокий клочок при ровном ходе исчезал за кадр (Максим 28.10: «клочок пропадает следующим кадром»)
+  if (q > 1 - QT) { const x = (q - 1 + QT) / QT; q = 1 - QT + QT * (1 - (1 - x) * (1 - x)); }
+  if (q < E) return lo + (Q[0] - lo) * (q / E);
+  if (q > 1 - e1) return Q[NQ] + (top - Q[NQ]) * ((q - 1 + e1) / e1);
+  const x = (q - E) / (1 - E - e1) * NQ, i = Math.floor(x);
+  return Q[i] + (Q[Math.min(NQ, i + 1)] - Q[i]) * (x - i);
+}
+// Мебель (третий слой гостиной): свой порядок проявления. Точке мебели — глубина пола у основания предмета в этом столбце кадра
+// (нижняя точка мебели по маске a3mk), не дальше её собственной глубины и не больше чем на 0,06 дальше основания: предмет встаёт
+// целиком, когда фронт по полу доходит до места, где он стоит, ковёр расползается по полу. Вне мебели — глубина модели.
+// Темп по заметности (вес — отличие от отделки); для ухода гостиной с мебелью тот же порядок (Qd)
+// Если в кадре мебели есть a3mo — порядок посчитан заранее по целым предметам (make_order.py, Максим 27.10: «стеллаж, торшер, стул
+// появляются обрезанными и в конце чпок — надо, чтобы полностью ровно прорисовывались постепенно»): у столбцового порядка ниже
+// дыры маски (между полками, у ножки торшера, между ножками кресла) рвали предмет — верх получал глубину стены и вставал в конце.
+// В a3mo: ковёр по расстоянию до пола от ближнего края, каждый предмет целиком снизу вверх от места, где стоит, терраса в середине
+function prepFurn() {
+  const s = S.a3;
+  if (!s || !s.furn || s.ord3 !== undefined || !s.rt || !ready[s.furn] || !ready[s.furnMask] || !ready[s.tex[1]]) return;
+  if (s.furnOrd && !ready[s.furnOrd]) return;
+  if (s.furnOrdD && !ready[s.furnOrdD]) return;
+  if (s.furnGrow && s.furnLines && !ready[s.furnLines]) return;   // таблица темпа чертежа считается по туши кадра чертежа
+  if (s.furnGrow && !ready[s.furnGrow]) return;
+  let b, w, h;
+  if (s.furnOrd) {   // готовый порядок: картинка сверху вниз → текстура снизу вверх
+    const I = imgData(tex[s.furnOrd], 4096); w = I.w; h = I.h; b = new Uint8Array(w * h * 4);
+    for (let j = 0; j < h; j++) b.set(I.d.subarray((h - 1 - j) * w * 4, (h - j) * w * 4), j * w * 4);
+    // R — целая часть порядка, G — дробная (как у текстур глубины); B = 255 — «здесь глубина модели»: всё, что не мебель,
+    // и перемены за правым стеклом — уходят в линии вместе со своей плоскостью, без белых пятен (Максим 27.10)
+    const D = s.ordData || readRT(s.rt);   // глубина с окнами на своей стене (fillOrder)
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+      const k = (j * w + i) * 4;
+      if (b[k + 2] > 127) { const q = (Math.min(D.h - 1, Math.floor((j + 0.5) / h * D.h)) * D.w + Math.min(D.w - 1, Math.floor((i + 0.5) / w * D.w))) * 4; b[k] = D.b[q]; b[k + 1] = D.b[q + 1]; }
+      b[k + 2] = b[k + 2] > 127 ? 255 : 0; b[k + 3] = 255;   // B остаётся флагом: шейдер проявляет такие точки (тени, тон) мягко
+    }
+  } else ({ b, w, h } = colOrder(s));
+  const tx = new THREE.DataTexture(b, w, h, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tx.minFilter = tx.magFilter = THREE.LinearFilter; tx.needsUpdate = true;
+  s.ord3 = tx; s.ord3Data = { b, w, h };
+  if (s.furnOrdD) {   // порядок чертежа (a3md, make_lines2.py): те же R + G/255, вокруг предметов — их порядок; флага модели нет
+    const I = imgData(tex[s.furnOrdD], 4096), bd = new Uint8Array(I.w * I.h * 4);
+    for (let j = 0; j < I.h; j++) bd.set(I.d.subarray((I.h - 1 - j) * I.w * 4, (I.h - j) * I.w * 4), j * I.w * 4);
+    const td = new THREE.DataTexture(bd, I.w, I.h, THREE.RGBAFormat, THREE.UnsignedByteType);
+    td.minFilter = td.magFilter = THREE.LinearFilter; td.needsUpdate = true; s.ord3d = td;
+  }
+  if (s.furnGrow) {   // рост линий чертежа от точек (a3mg, grow_lines.py): R + G/255 — порядок по пути от точки, B — точка
+    const I = imgData(tex[s.furnGrow], 4096), bg = new Uint8Array(I.w * I.h * 4);
+    for (let j = 0; j < I.h; j++) bg.set(I.d.subarray((I.h - 1 - j) * I.w * 4, (I.h - j) * I.w * 4), j * I.w * 4);
+    const tg = new THREE.DataTexture(bg, I.w, I.h, THREE.RGBAFormat, THREE.UnsignedByteType);
+    tg.minFilter = tg.magFilter = THREE.LinearFilter; tg.needsUpdate = true; s.ord3g = tg;
+    // темп чертежа мебели (Максим 30.10: «в конце резкий скачок»): доли туши по порядку роста линий, а не по порядку фото
+    if (s.furnLines) {
+      const L = imgData(tex[s.furnLines], 4096), v = [];
+      for (let q = 0; q < Math.min(L.d.length, I.d.length); q += 8) if (L.d[q] > 77) v.push(I.d[q] / 255 + I.d[q + 1] / 65025);
+      if (v.length > 1000) s.Q3g = quant(Float32Array.from(v));
+    }
+  }
+  if (AREA) {
+    const F = imgData(tex[s.furn]);
+    // ковёр (B кадра чертежа) — полным весом: светлый на светлом полу, он «слабая перемена», и фронт проскакивал его за 5 кадров
+    // (Максим 30.10: «в конце резкий скачок», кадры 701–706)
+    const RL = s.furnLines && ready[s.furnLines] ? imgData(tex[s.furnLines]) : null, RG = window.FURN_RUG;
+    // подложка ковра видна только под предметами (силуэт — G кадра чертежа): там и есть перемена, по её порядку (uRug)
+    const rug = RL && RG ? (u, v) => RL.d[px(RL, u, v) + 2] > 127 && RL.d[px(RL, u, v) + 1] > 127 ? RG.e0 + RG.es * Math.min(1, Math.max(0, (RG.yf - (1 - v)) / Math.max(1e-3, RG.yf - RG.yb))) : null : null;
+    s.Q3 = revealQ(s, F, (t) => t, { O: s.ord3Data, ph0: imgData(tex[s.tex[1]]), ch: 1, inv: true, minD: 0.03, extra: rug, amp0: FURN_AMP, band: [-0.07, -0.05, -0.03, -0.01], tail: 0.8 });   // полоса = растушёвка шторки
+    s.Qd = revealQ(s, F, (t) => t, { O: s.ord3Data });
+  }
+  state.dirty = true;
+}
+// прежний порядок (кадры мебели без a3mo): по столбцам, глубина пола у основания
+function colOrder(s) {
+  const D = s.ordData || readRT(s.rt), w = D.w, h = D.h, M = imgData(tex[s.furnMask], w), b = new Uint8Array(w * h * 4), E = new Float32Array(w * h), fe = [];
+  for (let i = 0; i < w; i++) {
+    let foot = null;
+    for (let j = 0; j < h; j++) {   // цель — строки снизу вверх, маска — сверху вниз
+      const k = j * w + i, t = D.b[k * 4] / 255 + D.b[k * 4 + 1] / 65025;
+      const mv = M.d[(Math.min(M.h - 1, Math.floor((1 - (j + 0.5) / h) * M.h)) * M.w + Math.min(M.w - 1, Math.floor((i + 0.5) / w * M.w))) * 4];
+      let e = t;
+      if (mv > 127) { if (foot === null) foot = t; e = Math.min(t, foot + FURN_SPAN); fe.push(e); } else foot = null;
+      E[k] = e;
+    }
+  }
+  // Терраса в заднем окне (Максим 27.10: «окно с террасой заполняется слишком быстро, жух — чуть помедленнее, финал поправить»):
+  // за стеклом модели нет (глубина 1), и терраса вставала последней за 0,3 с. Теперь её точкам порядок — вторая половина мебели
+  // (от 40 до 88 % порядка мебели), снизу вверх по проёму: настил, стол, стулья, — терраса идёт вместе с мебелью ~1 с и садится мягко
+  fe.sort((x, y) => x - y);
+  const W0 = fe.length ? fe[Math.floor(fe.length * 0.4)] : 0.6, W1 = fe.length ? fe[Math.floor(fe.length * 0.88)] : 0.9, V0 = 0.36, V1 = 0.64;
+  const inWin = (i, j) => { const u = (i + 0.5) / w, vt = 1 - (j + 0.5) / h; return u > 0.40 && u < 0.61 && vt > V0 && vt < V1; };
+  const open = new Uint8Array(w * h);   // проём (за стеклом пусто) и нижняя кромка рамы под ним — на неё лёг настил террасы
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (inWin(i, j) && E[j * w + i] > 0.97) open[j * w + i] = 1;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (inWin(i, j) && !open[j * w + i]) for (let d = 1; d <= 6 && j + d < h; d++) if (open[(j + d) * w + i] === 1) { open[j * w + i] = 2; break; }
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const k = j * w + i, vt = 1 - (j + 0.5) / h;   // vt — от верха кадра
+    if (open[k]) E[k] = W0 + (W1 - W0) * Math.min(1, (V1 - vt) / (V1 - V0));
+    const v = Math.min(0.9999, Math.max(0, E[k])) * 255; b[k * 4] = Math.floor(v); b[k * 4 + 1] = Math.round((v - Math.floor(v)) * 255); b[k * 4 + 3] = 255;
+  }
+  return { b, w, h };
+}
+// по одной остановке за простой, когда её кадр (и в A1 маска с картой фронта) загружены
+function prepArea() {
+  prepFurn();
+  if (!AREA) return;
+  const s = Object.values(S).find((x) => x.Q === undefined && x.rt && x.tex.every((k) => ready[k]));
+  if (!s) return;
+  const ph = imgData(tex[s.tex[0]]);
+  if (s === S.a1) {   // A1: фон по карте фронта от дома, дом по глубине; кто есть кто — по маске фото
+    const M = imgData(tex.a2m), D = imgData(tex.a2d), w = EF.w;
+    s.Q = { bg: revealQ(s, ph, (t, u, v) => (at2(M, u, v, 0) < 0.5 ? 1 - w * (at2(D, u, v, 0) + at2(D, u, v, 1) / 255) : null)),
+      house: revealQ(s, ph, (t, u, v) => (at2(M, u, v, 0) >= 0.5 ? (t < 0.88 ? t : 0.37) : null)) };
+  } else if (s.houseFirst) s.Q = { house: revealQ(s, ph, (t) => (t < 0.5 ? t : null)), bg: revealQ(s, ph, (t) => (t >= 0.5 ? t : null)) };
+  else s.Q = { all: revealQ(s, ph, (t) => t) };
+  if (s.layered) s.Q1s = revealQ(s, ph, (t) => t, { amp0: C1_AMP, band: [-0.02, -0.012, -0.005, 0] });   // темп мягкой шторки тёплого контура
+  if ((s.radial || s.layered) && s.tex[1]) s.Q2 = revealQ(s, imgData(tex[s.tex[1]]), (t) => t, s.layered
+    ? { O: s.ordData || readRT(s.rt), ph0: ph, ch: 1, amp0: FIN_AMP, band: [-0.04, -0.025, -0.012, -0.003] }   // шторка: полоса = растушёвка
+    : { O: readRT(s.rt), ph0: ph, ch: 1, band: [-0.035, -0.01, 0.01, 0.03] });
+  if (Object.values(s.Q).some((v) => !v)) s.Q = null;   // пустой набор точек — прежний ход фронта
+  idle(prepArea);
+}
+function idle(f) { if (window.requestIdleCallback) requestIdleCallback(f, { timeout: 2000 }); else setTimeout(f, 80); }
+const areaReady = (s) => (AREA && s.Q ? s.Q : null);   // пока не посчитано — прежний ход фронта
 
 // ------------------------------------------------------------------
 // Кадр: камера по прогрессу, группы линий, фото
@@ -1001,36 +2080,144 @@ function update(p) {
   camera.updateProjectionMatrix();
   // кровля и фундамент уходят в начале подъёма, камера проходит сквозь плиту
   const rise = seg(p, SA.tr3a, SA.tr3b);
-  const roofA = 1 - sstep(seg(rise, 0, 0.09));
-  for (const [k, a] of [['roof', roofA], ['house', 1], ['furn', 1]]) {
+  const roofA = 1 - sstep(seg(rise, ROOF_FADE[0], ROOF_FADE[1]));
+  // тёплый контур (с фасада внутрь): перегородки и мебель уходят в начале облёта к окну и возвращаются на подъёме к плану
+  const shellA = HAS_FA ? Math.max(1 - sstep(seg(p, SA.tr2a, SA.tr2a + SA.T(0.45))), sstep(seg(rise, 0.15, 0.4))) : 1;
+  // мебель модели (диван, стол, ковёр, полка из старого аниматика) на план не возвращается (Максим 27.10: «мебель на чертеже не нужна»):
+  // мебель теперь в кадре гостиной, на плане — только стены и перегородки с размерами
+  const furnA = HAS_FA ? 1 - sstep(seg(p, SA.tr2a, SA.tr2a + SA.T(0.45))) : 1;
+  // кровля с консолью навеса (как на кадре фасада) — от начала облёта до влёта в гостиную, на первом экране прежняя
+  const roofxA = HAS_FA ? sstep(seg(p, SA.a1dis1 - SA.T(0.1), SA.a1dis1 + SA.T(0.4))) * (1 - sstep(seg(p, SA.tr2a, SA.tr2a + SA.T(0.45)))) : 0;
+  // первый экран: линии модели там, где фото дома нет (торец навеса, отлив под ним — модель шире кадра), выходили сразу,
+  // пока дом ещё цветной (Максим 28.10: «правый нижний угол крыши прозрачный, крыша лесенкой поехала»). Здесь они проявляются
+  // вместе с растворением дома: от 0 в его начале до 1 к концу
+  const a1L = HAS_FA && p < SA.a1dis1 ? sstep(seg(p, SA.a1h0, SA.a1h0 + (SA.a1dis1 - SA.a1h0) * 0.7)) : 1;
+  // и только в силуэте дома на фото: остальное (свес под кровлей, торец — модель там шире) проявляется мягко уже на облёте
+  U.uClip.value = HAS_FA && S.a1.tex[2] && ready[S.a1.tex[2]] ? 1 - sstep(seg(p, SA.tr1a - SA.T(0.35), SA.tr1a)) : 0;   // Максим 30.10: гаснет до старта камеры (было до a1dis1 + 0,6 с — маска стоит, дом едет, свесы кровли пропадали)
+  if (U.uClip.value > 0) { U.uClipM.value = tex[S.a1.tex[2]]; U.uClipK.value.set(S.a1.kx, S.a1.ky); U.uClipC.value.set(S.a1.cx, 1 - S.a1.cy); }
+  for (const [k, a] of [['roof', roofA * (1 - roofxA) * a1L], ['roofx', roofxA], ['house', a1L], ['furn', furnA * a1L], ['parts', shellA * a1L]]) {
     const g = groups[k]; g.lines.material.uniforms.uAlpha.value = a; g.grp.visible = a > 0.002;
+    if (k === 'furn' || k === 'parts') g.solid.visible = a > 0.5;   // бумажные грани не гасятся по прозрачности: убираются на середине
   }
   // один оливковый элемент за раз: плита навеса на пути к фасаду, угловое окно перед влётом, пол гостиной на подъёме
-  const aRoof = sstep(seg(p, SA.tr1a + 0.01, SA.tr1a + 0.04)) * (1 - sstep(seg(p, SA.tr1b - 0.03, SA.tr1b - 0.005)));
-  const aWin = sstep(seg(p, SA.tr2a + 0.01, SA.tr2a + 0.035)) * (1 - sstep(seg(p, SA.tr2a + 0.075, SA.tr2a + 0.095)));
+  const Ts = SA.T;
+  const aRoof = sstep(seg(p, SA.tr1a + Ts(0.1), SA.tr1a + Ts(0.45))) * (1 - sstep(seg(p, SA.tr1b - Ts(0.45), SA.tr1b - Ts(0.1))));
+  // угловое окно А подсвечено, пока камера разворачивается к нему, и гаснет до влёта
+  const fw = (k) => SA.tr2a + k * (SA.tr2b - SA.tr2a);   // доли влёта: на 2,65 с это 1,17 / 1,56 / 2,11 / 2,38 с
+  const aWin = HAS_FA ? sstep(seg(p, fw(0.4415), fw(0.5887))) * (1 - sstep(seg(p, fw(0.7962), fw(0.8981))))
+    : sstep(seg(p, SA.tr2a + 0.01, SA.tr2a + 0.035)) * (1 - sstep(seg(p, SA.tr2a + 0.075, SA.tr2a + 0.095)));
   const aFloor = sstep(seg(rise, 0.25, 0.4)) * (1 - sstep(seg(p, SA.a4rev0, SA.a4rev0 + 0.015)));
   for (const [k, a] of [['roof', aRoof], ['win', aWin], ['floor', aFloor]]) { const m = accents[k]; m.material.uniforms.uAlpha.value = a; m.visible = a > 0.002; }
-  // фото: какая остановка и где фронт проявления (от камеры вглубь кадра)
-  let s = null, P1 = -9, P2 = -9;
-  if (p < SA.tr1b) { s = S.a1; P1 = p < SA.a1dis0 ? PH_F1 : p < SA.a1dis1 ? lerp(PH_F1, PH_F0, seg(p, SA.a1dis0, SA.a1dis1)) : -9; }
-  else if (p <= SA.tr2a) { s = S.a2; P1 = p < SA.a2dis0 ? lerp(PH_F0, PH_F1, seg(p, SA.a2rev0, SA.a2rev1)) : p < SA.a2dis1 ? lerp(PH_F1, PH_F0, seg(p, SA.a2dis0, SA.a2dis1)) : -9; }
-  else if (p <= SA.tr3a) {
-    s = S.a3;
-    const cc = seg(p, SA.a3c0, SA.a3c1), ff = seg(p, SA.a3f0, SA.a3f1), dd = seg(p, SA.a3dis0, SA.a3dis1);
-    P1 = cc <= 0 ? -9 : lerp(PH_F0, PH_F1, cc); P2 = ff <= 0 ? -9 : lerp(PH_F0, PH_F1, ff);
-    if (dd > 0) { const v = dd >= 1 ? -9 : lerp(PH_F1, PH_F0, dd); P1 = v; P2 = v; }
+  // фото: какая остановка и где фронт проявления (от камеры вглубь кадра). Остановка выбирается по частям сцены, а не по камере:
+  // в вариантах изингов части идут внахлёст — фасад проявляется, пока камера садится в конце облёта
+  let s = null, P1 = -9, P2 = -9, P3 = -9, P3d = -9, split = 0, ordA3 = null, soft1 = 0;
+  let fade = 1;
+  if (p < SA.a2rev0) {   // фон: фронт от дома к краям, убранная площадь по изингу, остаток в конце гаснет целиком; дом: как в оригинале
+    s = S.a1; const kb = seg(p, SA.a1dis0, SA.a1bg1), kh = seg(p, SA.a1h0, SA.a1dis1), Q = areaReady(s);
+    P1 = p < SA.a1dis0 ? EF.from : p < SA.a1dis1 ? (Q ? qP(Q.bg, 1 - ezFx(kb), EF.from) : lerp(EF.from, EF.to, ezFx(kb))) : -9;
+    P2 = kh <= 0 ? PH_F1 : Q ? qP(Q.house, 1 - ezFx(kh), PH_F1) : lerp(0.95, PH_F0, ezFx(kh));
+    fade = 1 - sstep(seg(kb, 0.8, 1));
   }
-  else { s = S.a4; const r = seg(p, SA.a4rev0, SA.a4rev1); P1 = r <= 0 ? -9 : lerp(PH_F0, PH_F1, r); }
+  else if (p < SA.a3c0) {
+    s = S.a2; const Q = areaReady(s), kr = seg(p, SA.a2rev0, SA.a2rev1), kd = seg(p, SA.a2dis0, SA.a2dis1);
+    if (p >= SA.a2dis1) P1 = -9;
+    else if (Q && Q.house) {
+      // дом и окружение — две фазы, у каждой свой синус и свой фронт (Максим 27.10: «дом хорошо начинается, а в конце резко
+      // заканчивается, и фон резко появляется»; при уходе «дом начинает превращаться в чертёж слишком быстро»). Фазы внахлёст,
+      // как фон и дом в начале сцены: следующая мягко трогается, пока предыдущая мягко садится. P1 — дом, P2 — окружение (uSplit).
+      // Проявление — зеркало ухода: дом 0…63 % времени, окружение 37…100 %; уход: окружение 0…63 %, дом 37…100 % (было 56/44)
+      const MID = 0.475;
+      if (p < SA.a2dis0) {
+        P1 = kr >= SA.frSplit[0] ? PH_F1 : qP(Q.house, ezFx(seg(kr, 0, SA.frSplit[0])), MID);   // фазы и нахлёст — SA.frSplit, первый скрипт
+        P2 = qP(Q.bg, ezFx(seg(kr, SA.frSplit[1], 1)), PH_F1);
+      } else {   // уход: фазы той же длины, дом трогается раньше (SA.fdSplit, нахлёст OV_FD в первом скрипте)
+        P2 = qP(Q.bg, 1 - ezFx(seg(kd, 0, SA.fdSplit[0])), PH_F1);
+        P1 = qP(Q.house, 1 - ezFx(seg(kd, SA.fdSplit[1], 1)), MID);
+      }
+      split = 1;
+    } else {
+      const r = ezFx(kr), d = ezFx(kd);
+      P1 = p < SA.a2dis0 ? (Q ? qP(Q.all, r, PH_F1) : lerp(PH_F0, PH_F1, r)) : (Q ? qP(Q.all, 1 - d, PH_F1) : lerp(PH_F1, PH_F0, d));
+    }
+  }
+  else if (p < SA.a4rev0) {
+    s = S.a3;
+    // тёплый контур (P1), следующим щелчком отделка поверх него (P2, второй слой); уходит гостиная целиком: P1 гасит кадр,
+    // отделка держится до конца. Максим 27.10: «и тёплый контур, и интерьер — не проявлялись, а по плоскостям расползались,
+    // как сейчас отделка; и когда уходит — по граням, стенам, полу, потолку». Поэтому оба слоя идут по глубине модели
+    // (s.layered), из центра — только с radial: true
+    // мебель (P3, третий слой) — сразу за отделкой, тем же синусом по заметности; уходит гостиная с мебелью по её порядку (ord3, Qd)
+    const cc = seg(p, SA.a3c0, SA.a3c1), ff = seg(p, SA.a3f0, SA.a3f1), uu = seg(p, SA.a3m0, SA.a3m1), dd = seg(p, SA.a3dis0, SA.a3dis1);
+    const Q = areaReady(s), Q2 = AREA && s.Q2 ? s.Q2 : null, Q3 = AREA && s.Q3 ? s.Q3 : null, fOK = !!(s.ord3 && ready[s.furn]);
+    const Q1 = soft1Q && s.layered && AREA && s.Q1s ? s.Q1s : Q && Q.all;   // темп мягкой шторки — только если она включена
+    P1 = cc <= 0 ? -9 : Q1 ? qP(Q1, ezFx(cc), PH_F1) : lerp(PH_F0, PH_F1, ezFx(cc));
+    P2 = ff <= 0 ? -9 : Q2 ? qP(Q2, ezFx(ff), PH_F1) : lerp(PH_F0, PH_F1, ezFx(ff));
+    soft1 = 0;   // тёплый контур — прежним акварельным reveal() (мягкая шторка из бумаги читалась серым дымом); окна — на своей стене (fillOrder)
+    // чертёж мебели впереди фото: чертёж — первые (1 − LEAD) шага, фото — последние (1 − LEAD), тем же изингом по заметности
+    const ud = seg(uu, 0, 1 - FURN_DRAW_LEAD), up = s.furnLines ? seg(uu, FURN_DRAW_LEAD, 1) : uu, lOK = fOK && !!s.furnLines && !!ready[s.furnLines];
+    P3 = !fOK || up <= 0 ? (fOK && uu > 0 ? PH_F0 - 1 : -9) : Q3 ? qP(Q3, ezFx(up), PH_F1, Q3.top, Q3.top ? 0.008 : 0.015) : lerp(PH_F0, PH_F1, ezFx(up));
+    P3d = !lOK || ud <= 0 ? -9 : s.Q3g && s.ord3g ? qP(s.Q3g, ezFx(ud), PH_F1) : Q3 ? qP(Q3, ezFx(ud), PH_F1) : lerp(PH_F0, PH_F1, ezFx(ud));
+    const Qd = fOK && uu > 0 && AREA && s.Qd ? s.Qd : Q && Q.all;
+    if (dd > 0) P1 = dd >= 1 ? -9 : Qd ? qP(Qd, 1 - ezFx(dd), PH_F1) : lerp(PH_F1, PH_F0, ezFx(dd));
+    ordA3 = fOK && uu > 0 && dd > 0 ? s.ord3 : null;
+  }
+  else { s = S.a4; P1 = -9; }   // план: только линии модели и размеры (#dims), картинки-чертежа больше нет (Максим 27.10)
   const ok = s && !LINES_ONLY && s.tex.every((k) => ready[k]) && P1 > -9;
-  photo.on = ok; photo.cover = ok && P1 >= PH_F1 && s.fit === 'cover';
+  // A1: пока дом цветной, линии модели под ним не рисуются — маска дома идёт по краю фото, модель местами на пару пикселей шире
+  photo.on = ok; photo.cover = ok && ((P1 >= PH_F1 && (!split || P2 >= PH_F1)) || (s === S.a1 && p < SA.a1h0)) && s.fit === 'cover';
   if (ok) {
-    photoU.uA.value = tex[s.tex[0]]; photoU.uB.value = tex[s.tex[1] || s.tex[0]]; photoU.uOrd.value = s.ord;
-    photoU.uP1.value = P1; photoU.uP2.value = P2; photoU.uK.value.set(s.kx, s.ky); photoU.uC.value.set(s.cx, 1 - s.cy);
+    photoU.uA.value = tex[s.tex[0]]; photoU.uB.value = tex[s.tex[1] || s.tex[0]]; photoU.uOrd.value = ordA3 || s.ord; photoU.uOrd2.value = s.ordFill || (s.rt ? s.rt.texture : s.ord);
+    photoU.uP3.value = P3; photoU.uF.value = P3 > -9 ? tex[s.furn] : photoU.uB.value; photoU.uOrd3.value = s.ord3 || photoU.uOrd2.value;
+    photoU.uP3d.value = P3d; photoU.uFL.value = P3d > -9 ? tex[s.furnLines] : photoU.uB.value; photoU.uOrd3d.value = s.ord3d || photoU.uOrd3.value;
+    const frOK = !FURN_PAPER && P3 > -9 && !!s.furnRug && !!ready[s.furnRug];
+    photoU.uHasFR.value = frOK ? 1 : 0;
+    photoU.uHasG.value = FURN_GROW && s.ord3g ? 1 : 0; photoU.uOrd3g.value = s.ord3g || photoU.uOrd3d.value; photoU.uFR.value = frOK ? tex[s.furnRug] : photoU.uB.value;
+    photoU.uLayer2Soft.value = s.layered ? 1 : 0; photoU.uLayer1Soft.value = soft1;
+    photoU.uM.value = s.tex[2] ? tex[s.tex[2]] : null; photoU.uHasM.value = s.tex[2] ? 1 : 0;
+    photoU.uP1.value = P1; photoU.uP2.value = P2; photoU.uSplit.value = split; photoU.uK.value.set(s.kx, s.ky); photoU.uC.value.set(s.cx, 1 - s.cy);
+    photoU.uMode.value = s === S.a1 && s.tex[3] ? 1 : 0; photoU.uFade.value = s === S.a1 ? fade : 1;
+    // без крапинок во всех проявлениях и растворениях (Максим 28.10: «белые пятна по домам появляются», «чтобы не было пятен»)
+    photoU.uSpk.value = 0;
+    if (s.tex[3]) {   // A1: карта фронта, шаг пикселя экрана в кадре (для полутона), ячейка полутона в пикселях экрана
+      const cv = renderer.domElement;
+      photoU.uD.value = tex[s.tex[3]]; photoU.uPx.value.set(s.kx / cv.width, s.ky / cv.height); photoU.uCell.value = Math.round(11 * renderer.getPixelRatio());
+    }
     photoU.uZ.value = s.zoom ? 1 / s.zoom : 1; if (s.zoom) photoU.uZC.value.set(s.zc[0], 1 - s.zc[1]); else photoU.uZC.value.set(0.5, 0.5);
   }
 }
+// План сверху: размеры и площади (#dims, пиксели чертежа a4-plan.png) кладутся на экран по камере — углы чертежа проецируются
+// на землю модели тем же пересчётом, что и plan выше (левая наружная грань x −0,35, верхняя z −14,65)
+const dimsEl = document.getElementById('dims'), PV = V3(0, 0, 0);
+function placeDims(p) {
+  const on = !!dimsEl && p >= SA.a4rev0 - 0.002;
+  if (dimsEl) dimsEl.style.visibility = on ? 'visible' : 'hidden';
+  if (!on) return;
+  const pr = (u, v) => { PV.set(-0.35 + (u - PLAN.x0) / PLAN.pxm, 0, -14.65 + (v - PLAN.y0) / PLAN.pxm).project(camera); return [(PV.x + 1) / 2 * W, (1 - PV.y) / 2 * H]; };
+  const a = pr(0, 0), b = pr(PLAN.w, PLAN.h);
+  dimsEl.style.left = a[0] + 'px'; dimsEl.style.top = a[1] + 'px'; dimsEl.style.width = (b[0] - a[0]) + 'px'; dimsEl.style.height = (b[1] - a[1]) + 'px';
+  const k = Math.max(1e-3, (b[0] - a[0]) / PLAN.w);   // экранных пикселей на пиксель чертежа: цифры 12 px, площади 11 px, линии 1 px на любом экране
+  dimsEl.style.setProperty('--fs', 12 / k + 'px'); dimsEl.style.setProperty('--fsa', 11 / k + 'px'); dimsEl.style.setProperty('--sw', 1 / k + 'px');
+}
+// Счётчик кадров (Максим 30.10: «пиши в углу счётчик кадров, я буду говорить, с какого по какой кадр косяк»): кадр = время
+// аниматика × 60, привязан к прокрутке, а не к часам; рядом — секунда и части сцены, что идут в этот момент. ?nofc — без счётчика
+const FCNT = qs.has('nofc') ? null : (() => {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:9999;pointer-events:none;font:12px/1.35 ui-monospace,Consolas,monospace;'
+    + 'color:#17191C;background:rgba(243,241,236,.88);border:1px solid #D8D4CC;padding:5px 8px;border-radius:4px;white-space:nowrap';
+  document.body.appendChild(el); return el;
+})();
+window.__fcSet = (t) => { if (FCNT) FCNT.textContent = t; };   // для шагов ниже сцены A
+const FC_PARTS =[['фон уходит', 'a1dis0', 'a1bg1'], ['дом в чертёж', 'a1h0', 'a1dis1'], ['облёт', 'tr1a', 'tr1b'], ['фасад проявляется', 'a2rev0', 'a2rev1'],
+  ['фасад уходит', 'a2dis0', 'a2dis1'], ['влёт', 'tr2a', 'tr2b'], ['тёплый контур', 'a3c0', 'a3c1'], ['отделка', 'a3f0', 'a3f1'], ['мебель', 'a3m0', 'a3m1'],
+  ['гостиная уходит', 'a3dis0', 'a3dis1'], ['подъём', 'tr3a', 'tr3b'], ['план', 'a4rev0', 'a4rev1']];
+function fcDraw(p) {
+  if (!FCNT) return;
+  const SA = window.SA, TT = SA.stopSec[3], f = Math.round(p * TT * 60), all = Math.round(TT * 60);
+  const parts = FC_PARTS.filter(([, a, b]) => p >= SA[a] && p <= SA[b]).map(([n, a, b]) => n + ' ' + Math.round((p - SA[a]) / (SA[b] - SA[a]) * 100) + '%');
+  FCNT.textContent = 'кадр ' + f + ' / ' + all + ' · ' + (p * TT).toFixed(2).replace('.', ',') + ' с' + (parts.length ? ' · ' + parts.join(' + ') : '');
+}
 function frame() {
-  update(state.p);
+  update(state.p); placeDims(state.p); fcDraw(state.p);
   if (!photo.cover) renderer.render(scene, camera);
   if (photo.on) { renderer.autoClear = photo.cover; renderer.render(photoScene, photoCam); renderer.autoClear = true; }
 }
@@ -1060,7 +2247,7 @@ if (FORCE_P != null) {
   // служебный режим: один кадр по прогрессу, тексты по тому же времени
   A.scrollTrigger && A.scrollTrigger.disable(false);
   A.progress(FORCE_P); state.p = FORCE_P; frame();
-  window.__sceneA = { frame, update, S, cam, camera, renderer, groups, accents, ACC, state };
+  window.__sceneA = { frame, update, S, cam, camera, renderer, groups, accents, ACC, state, scene, orderMat, bakeGround, THREE, photoU, tex, photoScene, photoCam };   // служебно: съёмка ракурсов
   window.__ready = true;
   return;
 }
